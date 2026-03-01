@@ -12,11 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Install Chrome + matching ChromeDriver on the runner. :contentReference[oaicite:2]{index=2}
-      - uses: browser-actions/setup-chrome@v2
+      - name: Setup Chrome (+ compatible ChromeDriver)
+        id: setup_chrome
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: stable
           install-chromedriver: true
+
+      - name: Show installed versions (sanity)
+        run: |
+          echo "chrome-path=${{ steps.setup_chrome.outputs.chrome-path }}"
+          echo "chromedriver-path=${{ steps.setup_chrome.outputs.chromedriver-path }}"
+          "${{ steps.setup_chrome.outputs.chrome-path }}" --version
+          "${{ steps.setup_chrome.outputs.chromedriver-path }}" --version
+          google-chrome --version || true
+          chromedriver --version || true
 
       - uses: actions/setup-python@v5
         with:
@@ -33,39 +43,50 @@ jobs:
           sudo apt-get install -y xvfb
 
       - name: Write SSH key + known_hosts
+        env:
+          LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          LIGHTSAIL_HOST: ${{ secrets.LIGHTSAIL_HOST }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/lightsail_key
+          # preserves multiline private key
+          printf '%s' "$LIGHTSAIL_SSH_KEY" > ~/.ssh/lightsail_key
           chmod 600 ~/.ssh/lightsail_key
-          ssh-keyscan -H "${{ secrets.LIGHTSAIL_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$LIGHTSAIL_HOST" >> ~/.ssh/known_hosts
 
       - name: Run Selenium (headed) under Xvfb + upload token to Lightsail
         env:
+          # Kite secrets
           KITE_API_KEY: ${{ secrets.KITE_API_KEY }}
           KITE_API_SECRET: ${{ secrets.KITE_API_SECRET }}
           KITE_USER_ID: ${{ secrets.KITE_USER_ID }}
           KITE_PASSWORD: ${{ secrets.KITE_PASSWORD }}
-          # Use one:
           KITE_PIN: ${{ secrets.KITE_PIN }}
+          # Or use TOTP instead of PIN:
           # KITE_TOTP_SECRET: ${{ secrets.KITE_TOTP_SECRET }}
 
+          # Force Selenium to use the chrome+driver installed by setup-chrome:
+          CHROME_BIN: ${{ steps.setup_chrome.outputs.chrome-path }}
+          CHROMEDRIVER_BIN: ${{ steps.setup_chrome.outputs.chromedriver-path }}
+
+          # Script config
           HEADLESS: "0"
           KITE_TOKEN_PATH: ./secrets/kite_access_token.json
           DEBUG_DIR: ./debug_login
 
+          # Lightsail target
+          LIGHTSAIL_HOST: ${{ secrets.LIGHTSAIL_HOST }}
+          LIGHTSAIL_USER: ${{ secrets.LIGHTSAIL_USER }}
         run: |
           mkdir -p ./secrets ./debug_login
           xvfb-run -a -s "-screen 0 1280x900x24" python scripts/get_kite_access_token_selenium.py
 
           scp -i ~/.ssh/lightsail_key ./secrets/kite_access_token.json \
-            "${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_HOST }}:/opt/kite/secrets/kite_access_token.json"
+            "$LIGHTSAIL_USER@$LIGHTSAIL_HOST:/opt/kite/secrets/kite_access_token.json"
 
       - name: Upload debug artifacts (if failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: kite-selenium-debug
-          path: |
-            debug_login/*.png
-            debug_login/*.html
-            debug_login/*.txt
+          path: debug_login/*
+          if-no-files-found: ignore
