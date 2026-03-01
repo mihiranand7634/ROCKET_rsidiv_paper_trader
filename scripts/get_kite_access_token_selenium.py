@@ -22,7 +22,7 @@ TOKEN_PATH = os.environ.get("KITE_TOKEN_PATH", "./secrets/kite_access_token.json
 DEBUG_DIR = os.environ.get("DEBUG_DIR", "./debug_login")
 HEADLESS = os.environ.get("HEADLESS", "0").strip().lower() in {"1", "true", "yes"}
 
-# These are set by the workflow to avoid version mismatch:
+# Provided by workflow to avoid Chrome/Driver mismatch:
 CHROME_BIN = os.environ.get("CHROME_BIN", "").strip()
 CHROMEDRIVER_BIN = os.environ.get("CHROMEDRIVER_BIN", "").strip()
 
@@ -69,40 +69,6 @@ def save_debug(driver, tag: str):
         pass
 
 
-def first_visible(driver, candidates, timeout=12):
-    end = time.time() + timeout
-    last = None
-    while time.time() < end:
-        for by, sel in candidates:
-            try:
-                el = driver.find_element(by, sel)
-                if el and el.is_displayed():
-                    return el
-            except Exception as e:
-                last = e
-        time.sleep(0.2)
-    if last:
-        raise last
-    raise RuntimeError("Element not found")
-
-
-def click_first(driver, candidates, timeout=12):
-    el = first_visible(driver, candidates, timeout=timeout)
-    el.click()
-    return el
-
-
-def type_first(driver, candidates, text, timeout=12, clear=True):
-    el = first_visible(driver, candidates, timeout=timeout)
-    if clear:
-        try:
-            el.clear()
-        except Exception:
-            pass
-    el.send_keys(text)
-    return el
-
-
 def main():
     api_key = need_env("KITE_API_KEY")
     api_secret = need_env("KITE_API_SECRET")
@@ -117,84 +83,92 @@ def main():
     kite = KiteConnect(api_key=api_key)
     login_url = kite.login_url()
 
-    chrome_opts = Options()
+    opts = Options()
     if HEADLESS:
-        chrome_opts.add_argument("--headless=new")
-    chrome_opts.add_argument("--no-sandbox")
-    chrome_opts.add_argument("--disable-dev-shm-usage")
-    chrome_opts.add_argument("--window-size=1280,900")
-    chrome_opts.add_argument("--disable-gpu")
+        opts.add_argument("--headless=new")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--window-size=1280,900")
+    opts.add_argument("--disable-gpu")
 
-    # Critical: force the Chrome binary installed by setup-chrome (avoids 145 vs 146 mismatch)
+    # Force correct Chrome binary (avoids /usr/bin/google-chrome 145.x)
     if CHROME_BIN:
-        chrome_opts.binary_location = CHROME_BIN
+        opts.binary_location = CHROME_BIN  # set chrome binary location :contentReference[oaicite:3]{index=3}
 
-    # Critical: force the matching chromedriver installed by setup-chrome
+    # Force correct chromedriver executable (Service class) :contentReference[oaicite:4]{index=4}
     service = Service(executable_path=CHROMEDRIVER_BIN) if CHROMEDRIVER_BIN else Service()
 
-    driver = webdriver.Chrome(service=service, options=chrome_opts)
+    driver = webdriver.Chrome(service=service, options=opts)
     wait = WebDriverWait(driver, 45)
 
     try:
         driver.get(login_url)
 
-        # Login screen
-        type_first(driver, [(By.ID, "userid")], user_id)
-        type_first(driver, [(By.ID, "password")], password)
-        click_first(driver, [(By.CSS_SELECTOR, "button[type='submit']")])
+        wait.until(EC.visibility_of_element_located((By.ID, "userid"))).send_keys(user_id)
+        wait.until(EC.visibility_of_element_located((By.ID, "password"))).send_keys(password)
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
 
         time.sleep(0.6)
 
-        # 2FA PIN vs TOTP
+        # PIN vs TOTP
         pin_mode = False
         try:
-            first_visible(driver, [(By.ID, "pin")], timeout=8)
+            WebDriverWait(driver, 8).until(EC.visibility_of_element_located((By.ID, "pin")))
             pin_mode = True
         except Exception:
             pin_mode = False
 
         if pin_mode:
             if not kite_pin:
-                raise RuntimeError("2FA is PIN but KITE_PIN not provided")
-            type_first(driver, [(By.ID, "pin")], kite_pin)
-            click_first(driver, [(By.CSS_SELECTOR, "button[type='submit']")])
+                raise RuntimeError("PIN required but KITE_PIN not provided")
+            wait.until(EC.visibility_of_element_located((By.ID, "pin"))).send_keys(kite_pin)
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
         else:
             if not totp_secret:
-                raise RuntimeError("2FA is TOTP but KITE_TOTP_SECRET not provided")
+                raise RuntimeError("TOTP required but KITE_TOTP_SECRET not provided")
             otp = pyotp.TOTP(totp_secret).now()
-            otp_box = first_visible(driver, [
+
+            otp_box = None
+            for sel in [
                 (By.CSS_SELECTOR, "input[placeholder*='OTP']"),
                 (By.CSS_SELECTOR, "input[placeholder*='TOTP']"),
                 (By.CSS_SELECTOR, "input[type='number']"),
                 (By.CSS_SELECTOR, "input[type='text']"),
-            ], timeout=12)
+            ]:
+                try:
+                    otp_box = WebDriverWait(driver, 10).until(EC.visibility_of_element_located(sel))
+                    break
+                except Exception:
+                    pass
+            if otp_box is None:
+                raise RuntimeError("Could not find OTP input box")
             otp_box.send_keys(otp)
-            click_first(driver, [(By.CSS_SELECTOR, "button[type='submit']")])
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
 
-        # Redirect with request_token
         wait.until(lambda d: "request_token=" in (d.current_url or ""))
         request_token = extract_request_token(driver.current_url)
 
-        # request_token -> access_token (official flow)
         session = kite.generate_session(request_token, api_secret=api_secret)
         access_token = session["access_token"]
 
         mkdirp_for_file(TOKEN_PATH)
-        payload = {
-            "api_key": api_key,
-            "generated_at": int(time.time()),
-            "user_id": session.get("user_id"),
-            "access_token": access_token,
-        }
         with open(TOKEN_PATH, "w", encoding="utf-8") as f:
-            json.dump(payload, f, indent=2)
+            json.dump(
+                {
+                    "api_key": api_key,
+                    "generated_at": int(time.time()),
+                    "user_id": session.get("user_id"),
+                    "access_token": access_token,
+                },
+                f,
+                indent=2,
+            )
 
         print(f"OK: token saved -> {TOKEN_PATH}")
-        print(f"user_id={payload.get('user_id')} token_last4={access_token[-4:]}")
+        print(f"user_id={session.get('user_id')} token_last4={access_token[-4:]}")
 
     except Exception:
         save_debug(driver, "failure")
-        print("ERROR: Selenium login failed")
         traceback.print_exc()
         raise
     finally:
