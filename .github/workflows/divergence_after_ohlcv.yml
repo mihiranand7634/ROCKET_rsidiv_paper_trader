@@ -1,0 +1,69 @@
+name: divergence-after-ohlcv
+
+on:
+  workflow_run:
+    workflows: ["kite-token-to-lightsail-xvfb"]  # must match the `name:` of workflow 1
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  build_divergences:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout the same branch as workflow 1 (latest HEAD)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Sync branch (ensure we have commits pushed by workflow 1)
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ github.event.workflow_run.head_branch }}"
+          git checkout "${{ github.event.workflow_run.head_branch }}"
+          git pull --rebase origin "${{ github.event.workflow_run.head_branch }}"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy
+
+      - name: Build divergence signals from datewise OHLCV store
+        env:
+          OHLCV_DAILY_DIR: ./data/ohlcv_daily
+          DIVERGENCE_OUT_DIR: ./signals
+          DIV_MODE: "latest"
+          LOOKBACK_BARS: "252"
+          SECOND_POINT_LOOKBACK: "5"
+          ATR_PERIOD: "14"
+          ATR_MULT: "1.1"
+          LOAD_LAST_FILES: "340"
+          EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY: "1"
+          EXCLUDE_INDEX_LIKE: "1"
+        run: |
+          set -euo pipefail
+          python -u scripts/build_divergence_signals_from_daily_store.py
+
+      - name: Commit & push signals
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add signals || true
+          if git diff --cached --quiet; then
+            echo "No signal changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update divergence signals"
+          git push origin "HEAD:${{ github.event.workflow_run.head_branch }}"
