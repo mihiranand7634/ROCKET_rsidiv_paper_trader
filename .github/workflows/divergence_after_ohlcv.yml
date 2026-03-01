@@ -2,8 +2,10 @@ name: divergence-after-ohlcv
 
 on:
   workflow_run:
-    workflows: ["kite-token-to-lightsail-xvfb"]  # must match the `name:` of workflow 1
+    workflows: ["kite-token-to-lightsail-xvfb"]  # must exactly match workflow-1 `name:`
     types: [completed]
+    # optional safety: only trigger when workflow-1 ran on main
+    # branches: [main]
 
 permissions:
   contents: write
@@ -14,18 +16,20 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
-      - name: Checkout the same branch as workflow 1 (latest HEAD)
+      # Check out the same branch where workflow-1 ran
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
-      - name: Sync branch (ensure we have commits pushed by workflow 1)
+      # IMPORTANT: workflow-1 may have pushed commits (OHLCV files).
+      # Pull latest branch state so we see those new files.
+      - name: Sync latest branch HEAD
         run: |
           set -euo pipefail
           git fetch origin "${{ github.event.workflow_run.head_branch }}"
-          git checkout "${{ github.event.workflow_run.head_branch }}"
-          git pull --rebase origin "${{ github.event.workflow_run.head_branch }}"
+          git reset --hard "origin/${{ github.event.workflow_run.head_branch }}"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -37,7 +41,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas numpy
 
-      - name: Build divergence signals from datewise OHLCV store
+      - name: Build divergence signals
         env:
           OHLCV_DAILY_DIR: ./data/ohlcv_daily
           DIVERGENCE_OUT_DIR: ./signals
@@ -49,6 +53,7 @@ jobs:
           LOAD_LAST_FILES: "340"
           EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY: "1"
           EXCLUDE_INDEX_LIKE: "1"
+          PYTHONUNBUFFERED: "1"
         run: |
           set -euo pipefail
           python -u scripts/build_divergence_signals_from_daily_store.py
