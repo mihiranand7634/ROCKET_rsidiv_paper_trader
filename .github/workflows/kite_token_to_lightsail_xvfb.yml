@@ -59,8 +59,9 @@ jobs:
           KITE_USER_ID: ${{ secrets.KITE_USER_ID }}
           KITE_PASSWORD: ${{ secrets.KITE_PASSWORD }}
           KITE_PIN: ${{ secrets.KITE_PIN }}
-          # or:
-          # KITE_TOTP_SECRET: ${{ secrets.KITE_TOTP_SECRET }}
+          KITE_TOTP_SECRET: ${{ secrets.KITE_TOTP_SECRET }}
+          # (comment/remove PIN to avoid confusion)
+          # KITE_PIN: ${{ secrets.KITE_PIN }}
 
           # Force exact binaries installed by setup-chrome:
           CHROME_BIN: ${{ steps.setup_chrome.outputs.chrome-path }}
