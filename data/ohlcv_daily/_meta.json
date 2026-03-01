@@ -1,0 +1,11 @@
+{
+  "mode": "backfill",
+  "start_day": "2025-02-22",
+  "end_day": "2026-02-27",
+  "universe_count": 9252,
+  "dates_written": 251,
+  "skipped_symbols": 5025,
+  "generated_utc": "2026-03-01T13:48:47Z",
+  "hist_rps": 2.5,
+  "exclude_etf": true
+}
