@@ -1,0 +1,71 @@
+name: kite-token-to-lightsail-xvfb
+
+on:
+  schedule:
+    # 08:00 IST = 02:30 UTC
+    - cron: "30 2 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  token:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install Chrome + matching ChromeDriver on the runner. :contentReference[oaicite:2]{index=2}
+      - uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+          install-chromedriver: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install kiteconnect selenium pyotp
+
+      - name: Install Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Write SSH key + known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/lightsail_key
+          chmod 600 ~/.ssh/lightsail_key
+          ssh-keyscan -H "${{ secrets.LIGHTSAIL_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Run Selenium (headed) under Xvfb + upload token to Lightsail
+        env:
+          KITE_API_KEY: ${{ secrets.KITE_API_KEY }}
+          KITE_API_SECRET: ${{ secrets.KITE_API_SECRET }}
+          KITE_USER_ID: ${{ secrets.KITE_USER_ID }}
+          KITE_PASSWORD: ${{ secrets.KITE_PASSWORD }}
+          # Use one:
+          KITE_PIN: ${{ secrets.KITE_PIN }}
+          # KITE_TOTP_SECRET: ${{ secrets.KITE_TOTP_SECRET }}
+
+          HEADLESS: "0"
+          KITE_TOKEN_PATH: ./secrets/kite_access_token.json
+          DEBUG_DIR: ./debug_login
+
+        run: |
+          mkdir -p ./secrets ./debug_login
+          xvfb-run -a -s "-screen 0 1280x900x24" python scripts/get_kite_access_token_selenium.py
+
+          scp -i ~/.ssh/lightsail_key ./secrets/kite_access_token.json \
+            "${{ secrets.LIGHTSAIL_USER }}@${{ secrets.LIGHTSAIL_HOST }}:/opt/kite/secrets/kite_access_token.json"
+
+      - name: Upload debug artifacts (if failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kite-selenium-debug
+          path: |
+            debug_login/*.png
+            debug_login/*.html
+            debug_login/*.txt
