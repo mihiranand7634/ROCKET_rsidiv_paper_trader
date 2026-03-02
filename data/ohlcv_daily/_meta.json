@@ -1,11 +1,9 @@
 {
-  "mode": "backfill",
-  "start_day": "2025-02-22",
-  "end_day": "2026-02-27",
+  "target_day": "2026-03-02",
   "universe_count": 9252,
-  "dates_written": 251,
-  "skipped_symbols": 5025,
-  "generated_utc": "2026-03-01T13:48:47Z",
-  "hist_rps": 2.5,
+  "rows_written": 3031,
+  "skipped": 6221,
+  "generated_utc": "2026-03-02T05:14:57Z",
+  "hist_rps": 3.5,
   "exclude_etf": true
 }
