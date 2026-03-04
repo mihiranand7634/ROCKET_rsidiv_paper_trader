@@ -3,7 +3,7 @@ name: divergence_after_ohlcv
 
 on:
   workflow_run:
-    workflows: ["kite-token-to-lightsail-xvfb"]  # must match your upstream workflow name exactly
+    workflows: ["kite-token-to-lightsail-xvfb"]   # must match upstream workflow name EXACTLY
     types: [completed]
 
 concurrency:
@@ -16,7 +16,14 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write   # needed for commit+push AND for downloading release assets via GH_TOKEN
+
+    env:
+      PYTHONUNBUFFERED: "1"
+      # Your Release tag that contains portfolio_run.zip as an asset
+      PORTFOLIO_RUN_RELEASE_TAG: "data-v1"
+      PORTFOLIO_RUN_ASSET_NAME: "portfolio_run.zip"
+      PORTFOLIO_RUN_LOCAL_PATH: "data/portfolio_run.zip"
 
     steps:
       - name: Checkout repo (same branch as upstream run)
@@ -36,32 +43,50 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy pandas joblib scikit-learn pyarrow
 
-      # 1) Build/update divergence signals from your OHLCV store
-      - name: Build divergence signals
+      # -----------------------------
+      # (A) Download baseline portfolio_run from GitHub Release asset
+      # -----------------------------
+      - name: Download portfolio_run.zip from Release
         env:
-          PYTHONUNBUFFERED: "1"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p data
+          rm -f "${PORTFOLIO_RUN_LOCAL_PATH}"
+
+          # Download from the specified tag
+          gh release download "${PORTFOLIO_RUN_RELEASE_TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${PORTFOLIO_RUN_ASSET_NAME}" \
+            --dir "data"
+
+          test -f "${PORTFOLIO_RUN_LOCAL_PATH}"
+          ls -lh "${PORTFOLIO_RUN_LOCAL_PATH}"
+
+      # -----------------------------
+      # (B) Build/update divergence signals from your OHLCV daily store/master
+      # -----------------------------
+      - name: Build divergence signals
         run: |
           python -u scripts/build_divergence_signals_from_daily_store.py
           test -f signals/divergences_latest.csv
 
-      # 2) Run the daily paper trader (Option A = train from baseline portfolio_run trades)
+      # -----------------------------
+      # (C) Run paper trader (daily retrain, Option A)
+      #     Option A uses BASELINE_RESULTS_PATH pointing to the zip that contains portfolio_run/
+      # -----------------------------
       - name: Run paper trader (daily retrain, Option A)
         env:
-          PYTHONUNBUFFERED: "1"
-          # If your baseline is a folder committed in the repo:
-          BASELINE_RESULTS_PATH: "data/rsi-divergence-portfolio-144"
-          # If your baseline is a zip in the repo, set instead:
-          # BASELINE_RESULTS_PATH: "data/rsi-divergence-portfolio-144.zip"
-          #
-          # Optional: force the run-date (otherwise script uses "today" in Asia/Kolkata)
+          BASELINE_RESULTS_PATH: ${{ env.PORTFOLIO_RUN_LOCAL_PATH }}
+          # Optional override if you want a deterministic run-date:
           # RUN_DATE: "2026-03-04"
         run: |
           python -u scripts/rsidiv_daily_retrain_paper_trader_option1.py
 
-      # 3) Optional: export newly CLOSED paper trades into your rolling training set CSV (Option B support)
+      # -----------------------------
+      # (D) Optional: export newly CLOSED paper trades into train_trades_closed.csv
+      #     (only needed if/when you switch to Option B later)
+      # -----------------------------
       - name: Export paper CLOSED trades -> data/train_trades_closed.csv (optional)
-        env:
-          PYTHONUNBUFFERED: "1"
         run: |
           if [ -f scripts/export_paper_closed_trades_to_trainset.py ]; then
             python -u scripts/export_paper_closed_trades_to_trainset.py
@@ -69,14 +94,25 @@ jobs:
             echo "scripts/export_paper_closed_trades_to_trainset.py not found; skipping."
           fi
 
-      # 4) Keep repo size under control: prune old run folders (keeps last ~45 days)
+      # -----------------------------
+      # (E) Prune old run folders to keep repo small
+      # -----------------------------
       - name: Prune old paper run folders
         run: |
           if [ -d paper_trader_out/run ]; then
             find paper_trader_out/run -mindepth 1 -maxdepth 1 -type d -mtime +45 -print -exec rm -rf {} \;
           fi
 
-      # 5) Commit only what must persist across GitHub runs (signals + paper state + latest run outputs + trainset)
+      # -----------------------------
+      # (F) Cleanup large downloaded asset so it never gets accidentally committed
+      # -----------------------------
+      - name: Cleanup downloaded release asset
+        run: |
+          rm -f "${PORTFOLIO_RUN_LOCAL_PATH}" || true
+
+      # -----------------------------
+      # (G) Commit & push only persistent outputs (signals + state + small outputs + optional trainset)
+      # -----------------------------
       - name: Commit & push outputs
         env:
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
@@ -84,25 +120,24 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Always commit signal output
+          # Always commit latest signal output
           if [ -f signals/divergences_latest.csv ]; then
             git add signals/divergences_latest.csv
           fi
 
-          # Paper-trader persistent state (needed for correct gating + open positions continuity)
+          # Paper-trader persistent state (required for open-positions continuity + wR gate continuity)
           if [ -d paper_trader_out/state ]; then
             git add paper_trader_out/state
           fi
 
-          # Latest run artifacts (optional but useful)
+          # Latest run artifacts (small CSVs only)
           if [ -d paper_trader_out/run ]; then
-            # Add only common CSV outputs; ignore huge caches/features/models by default
             git add paper_trader_out/run/*/orders_to_place.csv 2>/dev/null || true
             git add paper_trader_out/run/*/selected_trades.csv 2>/dev/null || true
             git add paper_trader_out/run/*/candidates_scored.csv 2>/dev/null || true
           fi
 
-          # Rolling training set (if exporter created/updated it)
+          # Optional rolling trainset (if exporter updated it)
           if [ -f data/train_trades_closed.csv ]; then
             git add data/train_trades_closed.csv
           fi
