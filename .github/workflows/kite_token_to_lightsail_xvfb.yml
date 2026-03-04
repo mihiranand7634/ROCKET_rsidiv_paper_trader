@@ -113,7 +113,7 @@ jobs:
           EXCLUDE_ETF: "1"
         run: |
           set -euo pipefail
-          python scripts/backfill_ohlcv_1y.py
+          python scripts/backfill_ohlcv_7y.py
 
       # ---- DAILY UPDATE (schedule + normal manual runs) ----
       - name: Daily OHLCV update (incremental)
@@ -126,7 +126,7 @@ jobs:
           EXCLUDE_ETF: "1"
         run: |
           set -euo pipefail
-          python scripts/update_ohlcv_1y.py
+          python scripts/update_ohlcv_7y.py
 
       - name: Build ohlcv_master.csv.gz from daily store
         env:
