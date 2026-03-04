@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Step B: Update 1-year OHLCV store in GitHub repo.
+Step B: Update OHLCV store in GitHub repo (keeps last ~N years; default ~7y).
 
 - Reads Kite access_token from KITE_TOKEN_PATH JSON (generated earlier in workflow).
 - Builds NSE EQ universe from kite.instruments("NSE").
@@ -10,7 +10,8 @@ Step B: Update 1-year OHLCV store in GitHub repo.
 - Fetches DAILY candle (O/H/L/C/V) for that day for each symbol using historical_data().
 - Writes: data/ohlcv_daily/ohlcv_YYYY-MM-DD.csv.gz
 - Prunes files older than RETENTION_DAYS.
-- No argparse. Configure via env vars.
+
+No argparse. Configure via env vars.
 """
 
 import os
@@ -19,19 +20,19 @@ import csv
 import json
 import gzip
 import time
-import math
 from datetime import datetime, timedelta
 
 from kiteconnect import KiteConnect
 
-
 TOKEN_PATH = os.environ.get("KITE_TOKEN_PATH", "./secrets/kite_access_token.json")
 OUT_DIR = os.environ.get("OHLCV_OUT_DIR", "./data/ohlcv_daily")
-RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", "370"))
-HIST_RPS = float(os.environ.get("HIST_RPS", "3.5"))
-EXCLUDE_ETF = os.environ.get("EXCLUDE_ETF", "1").strip() not in {"0", "false", "False"}
 
-# Safety buffer for retries
+# Keep ~7 years by default
+RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", str(7 * 366)))
+
+HIST_RPS = float(os.environ.get("HIST_RPS", "3.5"))
+EXCLUDE_ETF = os.environ.get("EXCLUDE_ETF", "1").strip().lower() not in {"0", "false", "no"}
+
 MAX_RETRIES = 4
 BACKOFF_BASE = 1.6  # exponential
 
@@ -47,7 +48,6 @@ def _read_token(path: str) -> dict:
 
 
 def _parse_ohlcv_fname(fn: str):
-    # ohlcv_YYYY-MM-DD.csv.gz
     m = re.match(r"^ohlcv_(\d{4}-\d{2}-\d{2})\.csv\.gz$", fn)
     if not m:
         return None
@@ -105,20 +105,16 @@ def _retry_call(fn, *args, **kwargs):
 
 
 def _find_reference_token(inst_rows):
-    # Prefer a stable, liquid equity
     pref = ["RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK"]
     by_sym = {r["tradingsymbol"]: r for r in inst_rows}
     for s in pref:
         if s in by_sym:
             return by_sym[s]["instrument_token"], s
-    # fallback to first
     r0 = inst_rows[0]
     return r0["instrument_token"], r0["tradingsymbol"]
 
 
 def _latest_completed_trading_day(kite: KiteConnect, ref_token: int) -> datetime.date:
-    # Pull last ~14 calendar days of daily candles, take the last candle date.
-    # Historical candle API provides daily candles (Timestamp, O/H/L/C/V). :contentReference[oaicite:5]{index=5}
     now = datetime.utcnow()
     frm = (now - timedelta(days=20)).replace(hour=0, minute=0, second=0, microsecond=0)
     to = now.replace(hour=23, minute=59, second=59, microsecond=0)
@@ -126,9 +122,7 @@ def _latest_completed_trading_day(kite: KiteConnect, ref_token: int) -> datetime
     candles = _retry_call(kite.historical_data, ref_token, frm, to, "day", False, False)
     if not candles:
         raise RuntimeError("Could not determine latest trading day (no candles returned).")
-    # candles have 'date' as datetime
-    last_dt = candles[-1]["date"]
-    return last_dt.date()
+    return candles[-1]["date"].date()
 
 
 def _write_gz_csv(path: str, rows):
@@ -152,8 +146,6 @@ def main():
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
-    # Build EQ universe from instruments("NSE") list.
-    # instruments() contains fields like exchange, tradingsymbol, instrument_token, instrument_type, segment. :contentReference[oaicite:6]{index=6}
     inst = kite.instruments("NSE")
     if not inst:
         raise RuntimeError("kite.instruments('NSE') returned empty list.")
@@ -190,7 +182,6 @@ def main():
         print(f"[PRUNE] kept={kept} removed={removed}")
         return
 
-    # Fetch daily candle for target_day for each instrument token
     frm = datetime(target_day.year, target_day.month, target_day.day, 0, 0, 0)
     to = datetime(target_day.year, target_day.month, target_day.day, 23, 59, 59)
 
@@ -198,7 +189,7 @@ def main():
     skipped = 0
     last_ts = 0.0
 
-    print(f"[UNIVERSE] NSE EQ count={len(eq)} ref={ref_sym} target_day={target_day.isoformat()}")
+    print(f"[UNIVERSE] NSE EQ count={len(eq)} ref={ref_sym} target_day={target_day.isoformat()} retention_days={RETENTION_DAYS}")
     for i, r in enumerate(eq, 1):
         last_ts = _throttle(last_ts, HIST_RPS)
 
@@ -233,7 +224,6 @@ def main():
     _write_gz_csv(out_file, rows)
     print(f"[WRITE] {out_file} rows={len(rows)} skipped={skipped}")
 
-    # Write meta (committed to repo for traceability)
     meta_path = os.path.join(OUT_DIR, "_meta.json")
     meta = {
         "target_day": target_day.isoformat(),
@@ -243,6 +233,7 @@ def main():
         "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
         "hist_rps": HIST_RPS,
         "exclude_etf": EXCLUDE_ETF,
+        "retention_days": RETENTION_DAYS,
     }
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
