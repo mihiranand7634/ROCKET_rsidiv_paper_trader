@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-One-time OHLCV backfill (daily) for last ~1 year.
+One-time OHLCV backfill (daily) for last ~N years (default ~7y).
 
 - Reads Kite access_token from KITE_TOKEN_PATH JSON (generated in same workflow).
 - Builds NSE EQ universe from kite.instruments("NSE").
 - Finds latest completed trading day using a reference symbol's daily candles.
-- For each symbol, fetches DAILY candles for [start_date .. end_date] in ONE request per symbol.
-  (Day interval supports up to 2000 days per request.)  # see Kite forum thread
+- For each symbol, fetches DAILY candles for [start_date .. end_date] in chunks.
+  (Day interval supports up to ~2000 days per request; script chunks for safety.)  # see your note
 - Writes one gzipped CSV per date:
     data/ohlcv_daily/ohlcv_YYYY-MM-DD.csv.gz
 - Prunes files older than RETENTION_DAYS.
@@ -23,18 +23,21 @@ import json
 import gzip
 import time
 from datetime import datetime, timedelta, date
+from typing import Dict, List, Tuple
 
 from kiteconnect import KiteConnect
-
 
 TOKEN_PATH = os.environ.get("KITE_TOKEN_PATH", "./secrets/kite_access_token.json")
 OUT_DIR = os.environ.get("OHLCV_OUT_DIR", "./data/ohlcv_daily")
 
-# Backfill window
-BACKFILL_DAYS = int(os.environ.get("BACKFILL_DAYS", "370"))  # ~1 year + buffer
-RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", "370"))
+# Backfill window (calendar days)
+BACKFILL_DAYS = int(os.environ.get("BACKFILL_DAYS", str(7 * 366)))      # ~7 years
+RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", str(7 * 366)))    # keep ~7 years
 
-# Throttle to avoid 429s: historical endpoint limits are discussed as 3 rps (older) and 2 rps (older). Use safe default.
+# Kite day-candle request span safety: keep < 2000 days to avoid failures
+MAX_DAYS_PER_REQUEST = int(os.environ.get("MAX_DAYS_PER_REQUEST", "1900"))
+
+# Throttle to avoid 429s
 HIST_RPS = float(os.environ.get("HIST_RPS", "2.0"))
 
 EXCLUDE_ETF = os.environ.get("EXCLUDE_ETF", "1").strip().lower() not in {"0", "false", "no"}
@@ -145,6 +148,15 @@ def _write_daily_files(out_dir: str, by_date_rows: dict):
                 w.writerow([r["date"], r["symbol"], r["open"], r["high"], r["low"], r["close"], r["volume"]])
 
 
+def _iter_windows(start_day: date, end_day: date, max_days: int):
+    """Generate inclusive [a..b] windows with length <= max_days."""
+    cur = start_day
+    while cur <= end_day:
+        b = min(end_day, cur + timedelta(days=max_days - 1))
+        yield cur, b
+        cur = b + timedelta(days=1)
+
+
 def main():
     tok = _read_token(TOKEN_PATH)
     api_key = tok.get("api_key") or os.environ.get("KITE_API_KEY")
@@ -187,41 +199,58 @@ def main():
     end_day = _latest_completed_trading_day(kite, ref_token)
     start_day = end_day - timedelta(days=BACKFILL_DAYS)
 
-    frm = datetime(start_day.year, start_day.month, start_day.day, 0, 0, 0)
-    to = datetime(end_day.year, end_day.month, end_day.day, 23, 59, 59)
+    windows = list(_iter_windows(start_day, end_day, MAX_DAYS_PER_REQUEST))
+    print(
+        f"[BACKFILL] universe={len(eq)} ref={ref_sym} start={start_day} end={end_day} "
+        f"windows={len(windows)} max_days_per_req={MAX_DAYS_PER_REQUEST} rps={HIST_RPS}"
+    )
 
-    print(f"[BACKFILL] universe={len(eq)} ref={ref_sym} start={start_day} end={end_day} rps={HIST_RPS}")
-
-    # Collect rows grouped by date (YYYY-MM-DD string)
-    by_date_rows = {}  # date_str -> list[dict]
+    by_date_rows: Dict[str, List[dict]] = {}
     last_ts = 0.0
     skipped_symbols = 0
+    total_requests = 0
 
     for i, r in enumerate(eq, 1):
-        last_ts = _throttle(last_ts, HIST_RPS)
         sym = r["tradingsymbol"]
         itok = r["instrument_token"]
-        try:
-            candles = _retry(kite.historical_data, itok, frm, to, "day", False, False)
-            if not candles:
-                skipped_symbols += 1
-                continue
-            for c in candles:
-                ds = c["date"].date().isoformat()
-                by_date_rows.setdefault(ds, []).append({
-                    "date": ds,
-                    "symbol": sym,
-                    "open": float(c["open"]),
-                    "high": float(c["high"]),
-                    "low": float(c["low"]),
-                    "close": float(c["close"]),
-                    "volume": int(c.get("volume", 0) or 0),
-                })
-        except Exception:
+
+        sym_had_any = False
+        sym_failed = False
+
+        for (a, b) in windows:
+            frm = datetime(a.year, a.month, a.day, 0, 0, 0)
+            to = datetime(b.year, b.month, b.day, 23, 59, 59)
+
+            last_ts = _throttle(last_ts, HIST_RPS)
+            total_requests += 1
+
+            try:
+                candles = _retry(kite.historical_data, itok, frm, to, "day", False, False)
+                if not candles:
+                    continue
+                sym_had_any = True
+                for c in candles:
+                    ds = c["date"].date().isoformat()
+                    by_date_rows.setdefault(ds, []).append({
+                        "date": ds,
+                        "symbol": sym,
+                        "open": float(c["open"]),
+                        "high": float(c["high"]),
+                        "low": float(c["low"]),
+                        "close": float(c["close"]),
+                        "volume": int(c.get("volume", 0) or 0),
+                    })
+            except Exception:
+                sym_failed = True
+
+        if (not sym_had_any) or sym_failed:
             skipped_symbols += 1
 
         if i % 200 == 0:
-            print(f"[PROGRESS] {i}/{len(eq)} dates={len(by_date_rows)} skipped_syms={skipped_symbols}")
+            print(
+                f"[PROGRESS] {i}/{len(eq)} dates={len(by_date_rows)} "
+                f"skipped_syms={skipped_symbols} requests={total_requests}"
+            )
 
     if not by_date_rows:
         raise RuntimeError("Backfill collected 0 rows.")
@@ -239,6 +268,11 @@ def main():
         "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
         "hist_rps": HIST_RPS,
         "exclude_etf": EXCLUDE_ETF,
+        "backfill_days": BACKFILL_DAYS,
+        "retention_days": RETENTION_DAYS,
+        "max_days_per_request": MAX_DAYS_PER_REQUEST,
+        "windows": len(windows),
+        "requests_total": total_requests,
     }
     with open(os.path.join(OUT_DIR, "_meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
