@@ -1,9 +1,16 @@
 {
-  "target_day": "2026-03-04",
+  "mode": "backfill",
+  "start_day": "2019-01-20",
+  "end_day": "2026-03-04",
   "universe_count": 9245,
-  "rows_written": 3026,
-  "skipped": 6219,
-  "generated_utc": "2026-03-04T05:07:10Z",
-  "hist_rps": 3.5,
-  "exclude_etf": true
+  "dates_written": 1832,
+  "skipped_symbols": 4908,
+  "generated_utc": "2026-03-04T18:54:26Z",
+  "hist_rps": 2.5,
+  "exclude_etf": true,
+  "backfill_days": 2600,
+  "retention_days": 2600,
+  "max_days_per_request": 1900,
+  "windows": 2,
+  "requests_total": 18490
 }
