@@ -1,74 +1,116 @@
-name: divergence-after-ohlcv
+# .github/workflows/divergence_after_ohlcv.yml
+name: divergence_after_ohlcv
 
 on:
   workflow_run:
-    workflows: ["kite-token-to-lightsail-xvfb"]  # must exactly match workflow-1 `name:`
+    workflows: ["kite-token-to-lightsail-xvfb"]  # must match your upstream workflow name exactly
     types: [completed]
-    # optional safety: only trigger when workflow-1 ran on main
-    # branches: [main]
 
-permissions:
-  contents: write
+concurrency:
+  group: divergence_after_ohlcv
+  cancel-in-progress: false
 
 jobs:
-  build_divergences:
-    runs-on: ubuntu-latest
+  build_signals_and_paper_trade:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
-      # Check out the same branch where workflow-1 ran
-      - name: Checkout
+      - name: Checkout repo (same branch as upstream run)
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
-      # IMPORTANT: workflow-1 may have pushed commits (OHLCV files).
-      # Pull latest branch state so we see those new files.
-      - name: Sync latest branch HEAD
-        run: |
-          set -euo pipefail
-          git fetch origin "${{ github.event.workflow_run.head_branch }}"
-          git reset --hard "origin/${{ github.event.workflow_run.head_branch }}"
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas numpy
+          pip install numpy pandas joblib scikit-learn pyarrow
 
+      # 1) Build/update divergence signals from your OHLCV store
       - name: Build divergence signals
         env:
-          OHLCV_DAILY_DIR: ./data/ohlcv_daily
-          DIVERGENCE_OUT_DIR: ./signals
-          DIV_MODE: "latest"
-          LOOKBACK_BARS: "252"
-          SECOND_POINT_LOOKBACK: "5"
-          ATR_PERIOD: "14"
-          ATR_MULT: "1.1"
-          LOAD_LAST_FILES: "340"
-          EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY: "1"
-          EXCLUDE_INDEX_LIKE: "1"
           PYTHONUNBUFFERED: "1"
         run: |
-          set -euo pipefail
           python -u scripts/build_divergence_signals_from_daily_store.py
+          test -f signals/divergences_latest.csv
 
-      - name: Commit & push signals
+      # 2) Run the daily paper trader (Option A = train from baseline portfolio_run trades)
+      - name: Run paper trader (daily retrain, Option A)
+        env:
+          PYTHONUNBUFFERED: "1"
+          # If your baseline is a folder committed in the repo:
+          BASELINE_RESULTS_PATH: "data/rsi-divergence-portfolio-144"
+          # If your baseline is a zip in the repo, set instead:
+          # BASELINE_RESULTS_PATH: "data/rsi-divergence-portfolio-144.zip"
+          #
+          # Optional: force the run-date (otherwise script uses "today" in Asia/Kolkata)
+          # RUN_DATE: "2026-03-04"
         run: |
-          set -euo pipefail
+          python -u scripts/rsidiv_daily_retrain_paper_trader_option1.py
+
+      # 3) Optional: export newly CLOSED paper trades into your rolling training set CSV (Option B support)
+      - name: Export paper CLOSED trades -> data/train_trades_closed.csv (optional)
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          if [ -f scripts/export_paper_closed_trades_to_trainset.py ]; then
+            python -u scripts/export_paper_closed_trades_to_trainset.py
+          else
+            echo "scripts/export_paper_closed_trades_to_trainset.py not found; skipping."
+          fi
+
+      # 4) Keep repo size under control: prune old run folders (keeps last ~45 days)
+      - name: Prune old paper run folders
+        run: |
+          if [ -d paper_trader_out/run ]; then
+            find paper_trader_out/run -mindepth 1 -maxdepth 1 -type d -mtime +45 -print -exec rm -rf {} \;
+          fi
+
+      # 5) Commit only what must persist across GitHub runs (signals + paper state + latest run outputs + trainset)
+      - name: Commit & push outputs
+        env:
+          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
+        run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add signals || true
+          # Always commit signal output
+          if [ -f signals/divergences_latest.csv ]; then
+            git add signals/divergences_latest.csv
+          fi
+
+          # Paper-trader persistent state (needed for correct gating + open positions continuity)
+          if [ -d paper_trader_out/state ]; then
+            git add paper_trader_out/state
+          fi
+
+          # Latest run artifacts (optional but useful)
+          if [ -d paper_trader_out/run ]; then
+            # Add only common CSV outputs; ignore huge caches/features/models by default
+            git add paper_trader_out/run/*/orders_to_place.csv 2>/dev/null || true
+            git add paper_trader_out/run/*/selected_trades.csv 2>/dev/null || true
+            git add paper_trader_out/run/*/candidates_scored.csv 2>/dev/null || true
+          fi
+
+          # Rolling training set (if exporter created/updated it)
+          if [ -f data/train_trades_closed.csv ]; then
+            git add data/train_trades_closed.csv
+          fi
+
           if git diff --cached --quiet; then
-            echo "No signal changes to commit."
+            echo "No changes to commit."
             exit 0
           fi
 
-          git commit -m "Update divergence signals"
-          git push origin "HEAD:${{ github.event.workflow_run.head_branch }}"
+          git commit -m "paper-trade: update signals/state/orders"
+          git push origin "HEAD:${BRANCH_NAME}"
