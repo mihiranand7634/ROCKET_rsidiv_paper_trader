@@ -7,20 +7,27 @@ on:
   workflow_dispatch:
     inputs:
       do_backfill:
-        description: "One-time: backfill ~1 year OHLCV into data/ohlcv_daily"
+        description: "One-time: backfill OHLCV into data/ohlcv_daily"
         required: false
         type: boolean
         default: false
       backfill_days:
-        description: "Backfill window (days). Use ~370 for 1 year + buffer."
+        description: "Backfill window (days). Use ~2600 for ~7y + buffer."
         required: false
-        default: "370"
+        default: "2600"
+      retention_days:
+        description: "Keep last N days in data/ohlcv_daily (>= backfill_days)."
+        required: false
+        default: "2600"
       hist_rps:
         description: "Throttle for historical API requests (requests/sec)"
         required: false
         default: "2.0"
+      artifact_retention_days:
+        description: "Actions artifact retention (1-90)"
+        required: false
+        default: "2"
 
-# Required so GITHUB_TOKEN can push commits back to the repo. :contentReference[oaicite:3]{index=3}
 permissions:
   contents: write
 
@@ -49,15 +56,14 @@ jobs:
       - name: Install Python deps
         run: |
           python -m pip install --upgrade pip
-          pip install kiteconnect selenium pyotp
+          pip install kiteconnect selenium pyotp pandas numpy
 
       - name: Install Xvfb
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
 
-      # Fix 1: write SSH key safely + strip CRLF + validate
-      - name: Write SSH key + known_hosts (Fix 1)
+      - name: Write SSH key + known_hosts
         env:
           LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           LIGHTSAIL_HOST: ${{ secrets.LIGHTSAIL_HOST }}
@@ -69,7 +75,7 @@ jobs:
           ssh-keygen -lf ~/.ssh/lightsail_key >/dev/null
           ssh-keyscan -H "$LIGHTSAIL_HOST" >> ~/.ssh/known_hosts
 
-      - name: Run Selenium (headed) under Xvfb + upload token to Lightsail
+      - name: Run Selenium under Xvfb + upload token to Lightsail
         env:
           KITE_API_KEY: ${{ secrets.KITE_API_KEY }}
           KITE_API_SECRET: ${{ secrets.KITE_API_SECRET }}
@@ -77,7 +83,6 @@ jobs:
           KITE_PASSWORD: ${{ secrets.KITE_PASSWORD }}
           KITE_TOTP_SECRET: ${{ secrets.KITE_TOTP_SECRET }}
 
-          # Force exact binaries from setup-chrome to avoid mismatch :contentReference[oaicite:4]{index=4}
           CHROME_BIN: ${{ steps.setup_chrome.outputs['chrome-path'] }}
           CHROMEDRIVER_BIN: ${{ steps.setup_chrome.outputs['chromedriver-path'] }}
 
@@ -97,14 +102,13 @@ jobs:
             "$LIGHTSAIL_USER@$LIGHTSAIL_HOST:/opt/kite/secrets/kite_access_token.json"
 
       # ---- BACKFILL (manual only) ----
-      # NOTE: workflow_dispatch boolean inputs often behave like strings in expressions; use string compare for safety. :contentReference[oaicite:5]{index=5}
-      - name: Backfill ~1Y OHLCV (manual)
+      - name: Backfill OHLCV (manual)
         if: ${{ github.event_name == 'workflow_dispatch' && (inputs.do_backfill == true || inputs.do_backfill == 'true') }}
         env:
           KITE_TOKEN_PATH: ./secrets/kite_access_token.json
           OHLCV_OUT_DIR: ./data/ohlcv_daily
           BACKFILL_DAYS: ${{ inputs.backfill_days }}
-          RETENTION_DAYS: "370"
+          RETENTION_DAYS: ${{ inputs.retention_days }}
           HIST_RPS: ${{ inputs.hist_rps }}
           EXCLUDE_ETF: "1"
         run: |
@@ -117,14 +121,31 @@ jobs:
         env:
           KITE_TOKEN_PATH: ./secrets/kite_access_token.json
           OHLCV_OUT_DIR: ./data/ohlcv_daily
-          RETENTION_DAYS: "370"
+          RETENTION_DAYS: "2600"
           HIST_RPS: "3.5"
           EXCLUDE_ETF: "1"
         run: |
           set -euo pipefail
           python scripts/update_ohlcv_1y.py
 
-      - name: Commit & push OHLCV updates to repo
+      - name: Build ohlcv_master.csv.gz from daily store
+        env:
+          OHLCV_DAILY_DIR: ./data/ohlcv_daily
+          OHLCV_MASTER_PATH: ./data/ohlcv_master.csv.gz
+          RETENTION_DAYS: "2600"
+        run: |
+          set -euo pipefail
+          python scripts/build_ohlcv_master_from_daily.py
+
+      - name: Upload ohlcv_master.csv.gz as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohlcv_master
+          path: data/ohlcv_master.csv.gz
+          if-no-files-found: error
+          retention-days: ${{ inputs.artifact_retention_days }}
+
+      - name: Commit & push OHLCV updates + master
         env:
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
@@ -134,13 +155,13 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/ohlcv_daily || true
+          git add data/ohlcv_daily data/ohlcv_master.csv.gz || true
           if git diff --cached --quiet; then
             echo "No OHLCV changes to commit."
             exit 0
           fi
 
-          git commit -m "Update OHLCV daily store"
+          git commit -m "Update OHLCV daily store + master"
           git push origin "HEAD:$BRANCH_NAME"
 
       - name: Upload debug artifacts (if failure)
@@ -150,3 +171,4 @@ jobs:
           name: kite-selenium-debug
           path: debug_login/*
           if-no-files-found: ignore
+          retention-days: 7
