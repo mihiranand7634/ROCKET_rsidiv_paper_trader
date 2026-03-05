@@ -1676,21 +1676,35 @@ def get_ohlc_at(series: SymSeries, day: pd.Timestamp) -> Optional[Tuple[float,fl
     atr = series.atr[i] if series.atr is not None else np.nan
     return float(o), float(h), float(l), float(c), float(atr)
 
-def simulate_exit_from_entry(series: SymSeries, entry_day: pd.Timestamp, side: str,
-                            entry_price: float, stop_price: float, target_price: float,
-                            max_hold_days: int, cutoff_day: pd.Timestamp) -> Tuple[Optional[pd.Timestamp], Optional[str], Optional[float]]:
+def simulate_exit_from_entry(
+    series: SymSeries,
+    entry_day: pd.Timestamp,
+    side: str,
+    entry_price: float,
+    stop_price: float,
+    target_price: float,
+    max_hold_days: int,
+    cutoff_day: pd.Timestamp,
+) -> Tuple[Optional[pd.Timestamp], Optional[str], Optional[float]]:
     """
-    Walks forward from entry_day to min(entry_day+max_hold_days, cutoff_day),
-    uses daily OHLC high/low to check stop/target.
-    Returns: (exit_day, exit_reason, exit_price)
-    exit_price is approximated as stop/target level (paper).
-    If not exited by cutoff_day, returns (None,None,None).
+    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+    using DAILY OHLC to decide stop/target/time exits.
+
+    Exit policy:
+      1) OPEN gap exits take priority:
+         - LONG: if Open <= stop => exit at Open; if Open >= target => exit at Open
+         - SHORT: if Open >= stop => exit at Open; if Open <= target => exit at Open
+      2) Intrabar (same-day) stop/target:
+         - If both stop and target touched in the same bar, use SAME_DAY_BOTH_HIT_POLICY
+         - Exit price is the stop/target level (paper assumption)
+      3) TIME exit at the last evaluated day close.
+
+    Returns: (exit_day, exit_reason, exit_price). If no exit by cutoff_day => (None,None,None).
     """
     entry_day = pd.Timestamp(entry_day).normalize()
     cutoff_day = pd.Timestamp(cutoff_day).normalize()
     side = str(side).lower()
 
-    # find entry index
     day64 = np.datetime64(entry_day.date())
     i0 = np.searchsorted(series.dates64, day64)
     if i0 >= len(series.dates64) or series.dates64[i0] != day64:
@@ -1704,14 +1718,27 @@ def simulate_exit_from_entry(series: SymSeries, entry_day: pd.Timestamp, side: s
 
     for i in range(i0, i1 + 1):
         d = pd.Timestamp(str(series.dates64[i])).normalize()
-        o,h,l,c = series.ohlc[i]
+        o, h, l, c = series.ohlc[i]
 
+        # 1) OPEN gap exits (priority)
+        if side == "long":
+            if o <= stop_price:
+                return d, "OPEN_STOP", float(o)
+            if o >= target_price:
+                return d, "OPEN_TARGET", float(o)
+        else:
+            if o >= stop_price:
+                return d, "OPEN_STOP", float(o)
+            if o <= target_price:
+                return d, "OPEN_TARGET", float(o)
+
+        # 2) Intrabar stop/target
         if side == "long":
             hit_stop = (l <= stop_price)
-            hit_tgt  = (h >= target_price)
+            hit_tgt = (h >= target_price)
         else:
-            hit_stop = (h >= stop_price)      # stop for short is above entry
-            hit_tgt  = (l <= target_price)    # target for short is below entry
+            hit_stop = (h >= stop_price)
+            hit_tgt = (l <= target_price)
 
         if hit_stop and hit_tgt:
             if SAME_DAY_BOTH_HIT_POLICY == "target_first":
@@ -1723,14 +1750,15 @@ def simulate_exit_from_entry(series: SymSeries, entry_day: pd.Timestamp, side: s
         if hit_tgt:
             return d, "TARGET", float(target_price)
 
-    # time exit at last_day if we reached it within cutoff
+    # 3) TIME exit at last_day close
     if last_day <= cutoff_day:
         px = get_ohlc_at(series, last_day)
         if px is None:
             return None, None, None
-        return last_day, "TIME", float(px[3])  # close
-    return None, None, None
+        return last_day, "TIME", float(px[3])
 
+    return None, None, None
+  
 def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
     side = str(side).lower()
     if side == "long":
