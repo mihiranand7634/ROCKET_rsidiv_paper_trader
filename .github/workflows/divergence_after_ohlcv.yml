@@ -1,4 +1,3 @@
-# .github/workflows/divergence_after_ohlcv.yml
 name: divergence_after_ohlcv
 
 on:
@@ -7,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: divergence_after_ohlcv
+  group: divergence_after_ohlcv-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
 
 permissions:
@@ -19,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo at upstream commit (head_sha)
+      - name: Checkout repo (branch that triggered upstream)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
       - name: Setup Python
@@ -40,30 +39,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: "data-v1"
-          ASSET_NAME: "portfolio_run.zip"
         run: |
           set -euo pipefail
           mkdir -p data
-
-          echo "Fetching release assets for tag: ${RELEASE_TAG}"
-          ASSET_ID="$(
-            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
-              --jq ".assets[] | select(.name==\"${ASSET_NAME}\") | .id"
-          )"
-
-          if [ -z "${ASSET_ID}" ]; then
-            echo "ERROR: Asset '${ASSET_NAME}' not found on release tag '${RELEASE_TAG}'"
-            exit 1
-          fi
-
-          echo "Downloading asset id=${ASSET_ID} -> data/${ASSET_NAME}"
-          gh api \
-            -H "Accept: application/octet-stream" \
-            "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
-            > "data/${ASSET_NAME}"
-
-          test -s "data/${ASSET_NAME}"
-          ls -lh "data/${ASSET_NAME}"
+          gh release download "${RELEASE_TAG}" -R "${GITHUB_REPOSITORY}" -p "portfolio_run.zip" -D data --clobber
+          test -s data/portfolio_run.zip
+          ls -lh data/portfolio_run.zip
 
       - name: Build divergence signals
         env:
@@ -77,7 +58,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           BASELINE_RESULTS_PATH: "./data/portfolio_run.zip"
-          # Optional:
+          # Optional override:
           # RUN_DATE: "2026-03-04"
         run: |
           set -euo pipefail
@@ -88,10 +69,11 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: |
           set -euo pipefail
-          if [ -f scripts/export_paper_closed_trades_to_trainset.py ]; then
+          # Only run exporter if ledger exists (first days may have no closed trades)
+          if [ -s paper_trader_out/state/trade_ledger.csv ]; then
             python -u scripts/export_paper_closed_trades_to_trainset.py
           else
-            echo "scripts/export_paper_closed_trades_to_trainset.py not found; skipping."
+            echo "No paper_trader_out/state/trade_ledger.csv yet (or empty). Skipping export."
           fi
 
       - name: Prune old paper run folders (keep last ~45 days)
@@ -106,30 +88,31 @@ jobs:
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
           set -euo pipefail
+
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           # Do NOT commit the release asset
           rm -f data/portfolio_run.zip || true
 
-          # Always commit signal output
+          # Signals
           if [ -f signals/divergences_latest.csv ]; then
             git add signals/divergences_latest.csv
           fi
 
-          # Persistent paper-trader state (needed for gating + continuity)
+          # Persistent trader state (needed for continuity)
           if [ -d paper_trader_out/state ]; then
             git add paper_trader_out/state
           fi
 
-          # Latest run artifacts (small, useful)
+          # Latest run artifacts (small)
           if [ -d paper_trader_out/run ]; then
             git add paper_trader_out/run/*/orders_to_place.csv 2>/dev/null || true
             git add paper_trader_out/run/*/selected_trades.csv 2>/dev/null || true
             git add paper_trader_out/run/*/candidates_scored.csv 2>/dev/null || true
           fi
 
-          # Rolling training set (if updated)
+          # Rolling trainset (if created/updated)
           if [ -f data/train_trades_closed.csv ]; then
             git add data/train_trades_closed.csv
           fi
