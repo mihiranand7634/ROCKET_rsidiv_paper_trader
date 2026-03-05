@@ -3,141 +3,133 @@ name: divergence_after_ohlcv
 
 on:
   workflow_run:
-    workflows: ["kite-token-to-lightsail-xvfb"]   # must match upstream workflow name EXACTLY
+    workflows: ["kite-token-to-lightsail-xvfb"]
     types: [completed]
 
 concurrency:
   group: divergence_after_ohlcv
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   build_signals_and_paper_trade:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write   # needed for commit+push AND for downloading release assets via GH_TOKEN
-
-    env:
-      PYTHONUNBUFFERED: "1"
-      # Your Release tag that contains portfolio_run.zip as an asset
-      PORTFOLIO_RUN_RELEASE_TAG: "data-v1"
-      PORTFOLIO_RUN_ASSET_NAME: "portfolio_run.zip"
-      PORTFOLIO_RUN_LOCAL_PATH: "data/portfolio_run.zip"
-
     steps:
-      - name: Checkout repo (same branch as upstream run)
+      - name: Checkout repo at upstream commit (head_sha)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
 
       - name: Install dependencies
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           pip install numpy pandas joblib scikit-learn pyarrow
 
-      # -----------------------------
-      # (A) Download baseline portfolio_run from GitHub Release asset
-      # -----------------------------
-      - name: Download portfolio_run.zip from Release
+      - name: Download portfolio_run.zip from GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: "data-v1"
+          ASSET_NAME: "portfolio_run.zip"
         run: |
+          set -euo pipefail
           mkdir -p data
-          rm -f "${PORTFOLIO_RUN_LOCAL_PATH}"
 
-          # Download from the specified tag
-          gh release download "${PORTFOLIO_RUN_RELEASE_TAG}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --pattern "${PORTFOLIO_RUN_ASSET_NAME}" \
-            --dir "data"
+          echo "Fetching release assets for tag: ${RELEASE_TAG}"
+          ASSET_ID="$(
+            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
+              --jq ".assets[] | select(.name==\"${ASSET_NAME}\") | .id"
+          )"
 
-          test -f "${PORTFOLIO_RUN_LOCAL_PATH}"
-          ls -lh "${PORTFOLIO_RUN_LOCAL_PATH}"
+          if [ -z "${ASSET_ID}" ]; then
+            echo "ERROR: Asset '${ASSET_NAME}' not found on release tag '${RELEASE_TAG}'"
+            exit 1
+          fi
 
-      # -----------------------------
-      # (B) Build/update divergence signals from your OHLCV daily store/master
-      # -----------------------------
+          echo "Downloading asset id=${ASSET_ID} -> data/${ASSET_NAME}"
+          gh api \
+            -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
+            > "data/${ASSET_NAME}"
+
+          test -s "data/${ASSET_NAME}"
+          ls -lh "data/${ASSET_NAME}"
+
       - name: Build divergence signals
+        env:
+          PYTHONUNBUFFERED: "1"
         run: |
+          set -euo pipefail
           python -u scripts/build_divergence_signals_from_daily_store.py
           test -f signals/divergences_latest.csv
 
-      # -----------------------------
-      # (C) Run paper trader (daily retrain, Option A)
-      #     Option A uses BASELINE_RESULTS_PATH pointing to the zip that contains portfolio_run/
-      # -----------------------------
       - name: Run paper trader (daily retrain, Option A)
         env:
-          BASELINE_RESULTS_PATH: ${{ env.PORTFOLIO_RUN_LOCAL_PATH }}
-          # Optional override if you want a deterministic run-date:
+          PYTHONUNBUFFERED: "1"
+          BASELINE_RESULTS_PATH: "./data/portfolio_run.zip"
+          # Optional:
           # RUN_DATE: "2026-03-04"
         run: |
+          set -euo pipefail
           python -u scripts/rsidiv_daily_retrain_paper_trader_option1.py
 
-      # -----------------------------
-      # (D) Optional: export newly CLOSED paper trades into train_trades_closed.csv
-      #     (only needed if/when you switch to Option B later)
-      # -----------------------------
       - name: Export paper CLOSED trades -> data/train_trades_closed.csv (optional)
+        env:
+          PYTHONUNBUFFERED: "1"
         run: |
+          set -euo pipefail
           if [ -f scripts/export_paper_closed_trades_to_trainset.py ]; then
             python -u scripts/export_paper_closed_trades_to_trainset.py
           else
             echo "scripts/export_paper_closed_trades_to_trainset.py not found; skipping."
           fi
 
-      # -----------------------------
-      # (E) Prune old run folders to keep repo small
-      # -----------------------------
-      - name: Prune old paper run folders
+      - name: Prune old paper run folders (keep last ~45 days)
         run: |
+          set -euo pipefail
           if [ -d paper_trader_out/run ]; then
             find paper_trader_out/run -mindepth 1 -maxdepth 1 -type d -mtime +45 -print -exec rm -rf {} \;
           fi
 
-      # -----------------------------
-      # (F) Cleanup large downloaded asset so it never gets accidentally committed
-      # -----------------------------
-      - name: Cleanup downloaded release asset
-        run: |
-          rm -f "${PORTFOLIO_RUN_LOCAL_PATH}" || true
-
-      # -----------------------------
-      # (G) Commit & push only persistent outputs (signals + state + small outputs + optional trainset)
-      # -----------------------------
       - name: Commit & push outputs
         env:
           BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
+          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Always commit latest signal output
+          # Do NOT commit the release asset
+          rm -f data/portfolio_run.zip || true
+
+          # Always commit signal output
           if [ -f signals/divergences_latest.csv ]; then
             git add signals/divergences_latest.csv
           fi
 
-          # Paper-trader persistent state (required for open-positions continuity + wR gate continuity)
+          # Persistent paper-trader state (needed for gating + continuity)
           if [ -d paper_trader_out/state ]; then
             git add paper_trader_out/state
           fi
 
-          # Latest run artifacts (small CSVs only)
+          # Latest run artifacts (small, useful)
           if [ -d paper_trader_out/run ]; then
             git add paper_trader_out/run/*/orders_to_place.csv 2>/dev/null || true
             git add paper_trader_out/run/*/selected_trades.csv 2>/dev/null || true
             git add paper_trader_out/run/*/candidates_scored.csv 2>/dev/null || true
           fi
 
-          # Optional rolling trainset (if exporter updated it)
+          # Rolling training set (if updated)
           if [ -f data/train_trades_closed.csv ]; then
             git add data/train_trades_closed.csv
           fi
