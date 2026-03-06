@@ -1,10 +1,11 @@
 {
-  "target_day": "2026-03-05",
-  "universe_count": 9251,
-  "rows_written": 2966,
-  "skipped": 6285,
-  "generated_utc": "2026-03-05T05:11:23Z",
+  "target_day": "2026-03-06",
+  "universe_count": 9291,
+  "rows_written": 2863,
+  "skipped": 6428,
+  "generated_utc": "2026-03-06T04:41:22Z",
   "hist_rps": 3.5,
+  "workers": 24,
   "exclude_etf": true,
   "retention_days": 2600
 }
