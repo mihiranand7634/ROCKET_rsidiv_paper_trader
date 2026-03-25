@@ -1,3 +1,4 @@
 trade_day,cutoff_day,keys_total,keys_evaluated,keys_throttled,wr_min,wr_p25,wr_median,wr_p75,wr_max,exits_seen_total,events_today
 2026-03-23,2026-03-23,0,0,0,,,,,,0,0
 2026-03-24,2026-03-24,2,0,0,,,,,,4,0
+2026-03-25,2026-03-25,4,0,0,,,,,,13,0
