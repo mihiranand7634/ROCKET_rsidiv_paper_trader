@@ -169,6 +169,11 @@ EXPR_THRESHOLD = 0.0
 
 ENFORCE_ONE_RR_PER_SIGNAL = True
 
+# Winner allocation parity knobs (simulate_fold_global style)
+WINNER_RESERVE_FRAC = 0.60
+WINNER_COVERAGE_FLOOR = 0.70
+WINNER_UNDERCOVER_BONUS = 0.15
+
 # --- Rolling wR throttle gate (persistent across days) ---
 WR_GATE_ENABLE = True
 WR_GATE_WINDOW_DAYS = 60
@@ -903,6 +908,7 @@ class RRPolicyPack:
 # Rolling wR throttle gate (persistent)
 # =========================================================
 PFKey = Tuple[str, str, str, float, float]  # (regime, side, side_mode, stop_r, tgt_r)
+PFKeyLite = Tuple[str, str, float, float]   # (regime, side_mode, stop_r, tgt_r)
 
 @dataclass
 class GateEvent:
@@ -1123,6 +1129,58 @@ class OpenPos:
 
 def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
     return (str(regime), str(side), str(side_mode), float(stop_r), float(tgt_r))
+
+def _pf_key_lite(regime: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKeyLite:
+    return (str(regime), str(side_mode), float(stop_r), float(tgt_r))
+
+def _build_pf_coverage_maps(active_window_trades: pd.DataFrame, taken_df: pd.DataFrame) -> Tuple[Dict[PFKeyLite, int], Dict[PFKeyLite, int], Dict[PFKeyLite, float]]:
+    pf_total: Dict[PFKeyLite, int] = {}
+    pf_taken: Dict[PFKeyLite, int] = {}
+
+    if not active_window_trades.empty:
+        need = {"regime", "side_mode", "stop_r", "tgt_r"}
+        if need.issubset(active_window_trades.columns):
+            g = active_window_trades.copy()
+            g["regime"] = g["regime"].astype(str)
+            g["side_mode"] = g["side_mode"].astype(str)
+            g["stop_r"] = pd.to_numeric(g["stop_r"], errors="coerce").round(6)
+            g["tgt_r"] = pd.to_numeric(g["tgt_r"], errors="coerce").round(6)
+            g = g.dropna(subset=["regime", "side_mode", "stop_r", "tgt_r"])
+            pf_total = g.groupby(["regime", "side_mode", "stop_r", "tgt_r"], sort=False).size().to_dict()
+
+    if not taken_df.empty:
+        need = {"regime", "side_mode", "stop_r", "tgt_r"}
+        if need.issubset(taken_df.columns):
+            t = taken_df.copy()
+            t["regime"] = t["regime"].astype(str)
+            t["side_mode"] = t["side_mode"].astype(str)
+            t["stop_r"] = pd.to_numeric(t["stop_r"], errors="coerce").round(6)
+            t["tgt_r"] = pd.to_numeric(t["tgt_r"], errors="coerce").round(6)
+            t = t.dropna(subset=["regime", "side_mode", "stop_r", "tgt_r"])
+            pf_taken = t.groupby(["regime", "side_mode", "stop_r", "tgt_r"], sort=False).size().to_dict()
+
+    keys = set(pf_total.keys()) | set(pf_taken.keys())
+    pf_cov = {}
+    for k in keys:
+        denom = max(1, int(pf_total.get(k, 0)))
+        pf_cov[k] = float(int(pf_taken.get(k, 0)) / denom)
+    return pf_total, pf_taken, pf_cov
+
+def _winner_undercoverage_bonus(df_day: pd.DataFrame, pf_cov_map: Dict[PFKeyLite, float]) -> np.ndarray:
+    bonus = np.zeros((len(df_day),), dtype=np.float32)
+    if df_day.empty:
+        return bonus
+    keys = list(zip(
+        df_day["regime"].astype(str),
+        df_day["side_mode"].astype(str),
+        pd.to_numeric(df_day["stop_r"], errors="coerce").round(6),
+        pd.to_numeric(df_day["tgt_r"], errors="coerce").round(6),
+    ))
+    for i, k in enumerate(keys):
+        cov = float(pf_cov_map.get(k, 1.0))
+        if cov < float(WINNER_COVERAGE_FLOOR):
+            bonus[i] = float(WINNER_UNDERCOVER_BONUS)
+    return bonus
 
 def _daily_capacity(equity: float, open_positions: List[OpenPos]) -> Tuple[int, float]:
     slots = max(0, int(MAX_OPEN_POSITIONS - len(open_positions)))
@@ -2119,7 +2177,35 @@ def main():
     if ENFORCE_ONE_RR_PER_SIGNAL:
         cand = cand.sort_values(["rr_choice_score","baseline_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
 
+    # Build active-window PF coverage maps (simulate_fold_global parity)
+    taken_frames = []
+    if not led.empty:
+        t_led = led.copy()
+        t_led.columns = [c.strip() for c in t_led.columns]
+        need = {"regime", "side_mode", "stop_r", "tgt_r"}
+        if need.issubset(set(t_led.columns)):
+            taken_frames.append(t_led[["regime", "side_mode", "stop_r", "tgt_r"]].copy())
+    if open_positions:
+        t_open = pd.DataFrame([asdict(p) for p in open_positions])
+        if {"regime", "side_mode", "stop_r", "tgt_r"}.issubset(set(t_open.columns)):
+            taken_frames.append(t_open[["regime", "side_mode", "stop_r", "tgt_r"]].copy())
+    taken_pf_df = pd.concat(taken_frames, ignore_index=True) if taken_frames else pd.DataFrame(columns=["regime", "side_mode", "stop_r", "tgt_r"])
+    pf_total_map, pf_taken_map, pf_cov_map = _build_pf_coverage_maps(
+        active_window_trades=train_trades,
+        taken_df=taken_pf_df,
+    )
+
+    # coverage bonus on raw signal score (before gate penalty)
+    bonus = _winner_undercoverage_bonus(cand, pf_cov_map)
+    cand["winner_cov"] = [
+        float(pf_cov_map.get(_pf_key_lite(r.regime, r.side_mode, r.stop_r, r.tgt_r), 1.0))
+        for r in cand.itertuples(index=False)
+    ]
+    cand["winner_bonus"] = bonus
+    cand["expr_score_cov"] = cand["expr_score"].astype(np.float32) + bonus
+
     # gate-adjusted selection penalty (ranking only)
+    rank_col = "expr_score_cov"
     if WR_GATE_ENABLE and WR_GATE_SCORE_PENALTY > 0:
         penalty = float(WR_GATE_SCORE_PENALTY)
         mults = []
@@ -2127,10 +2213,10 @@ def main():
             mults.append(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r)))
         mults = np.array(mults, dtype=np.float32)
         cand["gate_mult_now"] = mults
-        cand["expr_score_adj"] = cand["expr_score"].astype(np.float32) - np.where(mults < 0.999, penalty, 0.0).astype(np.float32)
+        cand["expr_score_adj"] = cand[rank_col].astype(np.float32) - np.where(mults < 0.999, penalty, 0.0).astype(np.float32)
     else:
         cand["gate_mult_now"] = 1.0
-        cand["expr_score_adj"] = cand["expr_score"].astype(np.float32)
+        cand["expr_score_adj"] = cand[rank_col].astype(np.float32)
 
     cap, open_risk_pct = _daily_capacity(equity, open_positions)
     if cap <= 0:
@@ -2145,11 +2231,73 @@ def main():
         save_state(st)
         return
 
+    cand_rank = cand.copy()
     if SELECTION_MODE == "expr_threshold":
-        cand_sel = cand[cand["expr_score"] >= float(EXPR_THRESHOLD)].copy()
-        cand_sel = cand_sel.sort_values("expr_score_adj", ascending=False).head(cap).copy()
+        cand_rank = cand_rank[cand_rank["expr_score"] >= float(EXPR_THRESHOLD)].copy()
+
+    reserved_total = int(round(float(WINNER_RESERVE_FRAC) * int(cap)))
+    if reserved_total > 0 and not cand_rank.empty:
+        cnt_pf = cand_rank.groupby(["regime", "side_mode", "stop_r", "tgt_r"], sort=False).size().to_dict()
+        sum_cnt = float(sum(cnt_pf.values())) if cnt_pf else 0.0
+        reserved_pf = {}
+        if sum_cnt > 0:
+            for k, c in cnt_pf.items():
+                reserved_pf[k] = int(round(float(reserved_total) * (float(c) / sum_cnt)))
+
+        picked_idx = []
+        used = 0
+        if reserved_pf:
+            ranked = cand_rank.sort_values("expr_score_adj", ascending=False)
+            for k, kslots in reserved_pf.items():
+                if kslots <= 0:
+                    continue
+                dfk = ranked[
+                    (ranked["regime"] == k[0]) &
+                    (ranked["side_mode"] == k[1]) &
+                    (ranked["stop_r"] == k[2]) &
+                    (ranked["tgt_r"] == k[3])
+                ]
+                if dfk.empty:
+                    continue
+                take_k = min(kslots, len(dfk), cap - used)
+                if take_k <= 0:
+                    continue
+                picked_idx.extend(dfk.head(take_k).index.tolist())
+                used += take_k
+                if used >= cap:
+                    break
+
+        picked = cand_rank.loc[picked_idx].copy() if picked_idx else cand_rank.iloc[0:0].copy()
+        rem = cap - len(picked)
+        if rem > 0:
+            rest = cand_rank.drop(index=picked.index, errors="ignore").sort_values("expr_score_adj", ascending=False)
+            picked = pd.concat([picked, rest.head(rem)], axis=0)
+        cand_sel = picked.copy()
     else:
-        cand_sel = cand.sort_values("expr_score_adj", ascending=False).head(cap).copy()
+        cand_sel = cand_rank.sort_values("expr_score_adj", ascending=False).head(cap).copy()
+
+    # per-run PF diagnostics for selection parity checks
+    cand_pf = cand.groupby(["regime", "side_mode", "stop_r", "tgt_r"], sort=False).size().rename("cand_n")
+    sel_pf = cand_sel.groupby(["regime", "side_mode", "stop_r", "tgt_r"], sort=False).size().rename("selected_n") if not cand_sel.empty else pd.Series(dtype=int, name="selected_n")
+    diag_rows = []
+    diag_keys = set(pf_total_map.keys()) | set(pf_taken_map.keys()) | set(cand_pf.index.tolist()) | set(sel_pf.index.tolist())
+    for k in sorted(diag_keys):
+        diag_rows.append(dict(
+            regime=str(k[0]),
+            side_mode=str(k[1]),
+            stop_r=float(k[2]),
+            tgt_r=float(k[3]),
+            active_total_n=int(pf_total_map.get(k, 0)),
+            already_taken_n=int(pf_taken_map.get(k, 0)),
+            coverage=float(pf_cov_map.get(k, 0.0)),
+            cand_n=int(cand_pf.get(k, 0)),
+            selected_n=int(sel_pf.get(k, 0)),
+        ))
+    diag_df = pd.DataFrame(diag_rows).sort_values(["selected_n", "cand_n", "coverage"], ascending=[False, False, True]) if diag_rows else pd.DataFrame()
+    diag_df.to_csv(os.path.join(run_dir, "pf_key_selection_diagnostics.csv"), index=False)
+    if not diag_df.empty:
+        top = diag_df.head(10)
+        log.info("[SELECT PF] top_selected=\n%s", top.to_string(index=False))
 
     # open new positions with gate sizing
     orders = []
