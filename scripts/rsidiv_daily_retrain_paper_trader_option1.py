@@ -144,7 +144,7 @@ RR_POLICY_RIDGE_SOLVER = "lsqr"
 RR_POLICY_MIN_ROWS_PER_PAIR = 2500
 RR_POLICY_MAX_ROWS_PER_PAIR = 120_000
 RR_POLICY_PRED_CLIP = R_ABS_MAX_SANITY
-RR_POLICY_BASELINE_WEIGHT = 0.25   # if you have baseline_score; otherwise 0.
+RR_POLICY_BASELINE_WEIGHT = 0.25   # blend baseline_score into rr_choice_score when rr_pred is available
 
 # --- Candidate generation from divergence signals ---
 # stop ATR multiple: if STOP_ATR_LIST empty, uses ATRMult from the signal row.
@@ -2104,13 +2104,20 @@ def main():
     log.info(f"[CAND] missing_bucket_scores={missing_cnt:,} fallback_mode={fallback_mode}")
 
     # RR choice score
+    # Baseline score (notebook parity): use the candidate-level selection score as baseline fallback.
+    cand["baseline_score"] = cand["expr_score"].astype(np.float32)
     rr_pred = rr_policy_predict(cand, rr_bucket, rr_global, Xc)
     cand["rr_pred"] = rr_pred.astype(np.float32)
-    cand["rr_choice_score"] = np.where(np.isfinite(rr_pred), rr_pred, cand["expr_score"].values).astype(np.float32)
+    base = cand["baseline_score"].values.astype(np.float32)
+    cand["rr_choice_score"] = np.where(
+        np.isfinite(rr_pred),
+        rr_pred.astype(np.float32) + float(RR_POLICY_BASELINE_WEIGHT) * base,
+        base,
+    ).astype(np.float32)
 
     # one RR per signal: group by (symbol, entry_date, side) and pick best rr_choice_score
     if ENFORCE_ONE_RR_PER_SIGNAL:
-        cand = cand.sort_values(["rr_choice_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
+        cand = cand.sort_values(["rr_choice_score","baseline_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
 
     # gate-adjusted selection penalty (ranking only)
     if WR_GATE_ENABLE and WR_GATE_SCORE_PENALTY > 0:
