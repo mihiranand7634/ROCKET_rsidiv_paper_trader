@@ -129,7 +129,10 @@ MAG_RF_PARAMS = dict(
 R_ABS_MAX_SANITY = 20.0
 
 # Missing bucket handling at scoring time:
-MISSING_BUCKET_FALLBACK = "zero"   # "zero" or "drop"
+# - "baseline": replace missing-bucket expr scores with BASELINE_PROXY_SCORE (notebook parity default)
+# - "drop": drop missing-bucket candidates
+# - "zero": legacy option (kept for backwards compatibility)
+MISSING_BUCKET_FALLBACK = "baseline"   # "baseline" or "drop" (legacy: "zero")
 SENTINEL_SCORE = -1e9
 
 # RR policy (optional; used to pick one RR per signal)
@@ -1553,6 +1556,23 @@ def train_rr_policy_daily(train_df: pd.DataFrame, series_map: Dict[str, SymSerie
 
     return bucket_rr, global_rr, pd.DataFrame(stats)
 
+
+def compute_baseline_proxy_score(train_df: pd.DataFrame) -> float:
+    """
+    Notebook parity proxy for missing-bucket expr scores.
+    Uses a simple "winner-slice" analogue: mean positive R-multiple from training winners.
+    Falls back to overall mean R, then 0.0 if unavailable.
+    """
+    if train_df is None or train_df.empty or "rmult" not in train_df.columns:
+        return 0.0
+    r = pd.to_numeric(train_df["rmult"], errors="coerce").replace([np.inf, -np.inf], np.nan)
+    if r.notna().sum() == 0:
+        return 0.0
+    wins = r[r > 0]
+    if len(wins) > 0:
+        return float(np.nanmean(wins.values.astype(np.float32)))
+    return float(np.nanmean(r.values.astype(np.float32)))
+
 def rr_policy_predict(df: pd.DataFrame, bucket_rr: Dict[Tuple[str,str,float,float], RRPolicyPack], global_rr: Dict[Tuple[float,float], RRPolicyPack],
                       X: np.ndarray) -> np.ndarray:
     n = len(df)
@@ -1898,6 +1918,8 @@ def main():
     forced = int((t_gap["gap_skip"] == 1).sum())
     train_trades = t_gap[t_gap["gap_skip"] == 0].drop(columns=["entry_seg","exit_seg","gap_skip"]).copy()
     log.info(f"[GAP] forced_skips={forced:,} kept_train={len(train_trades):,}")
+    baseline_proxy_score = compute_baseline_proxy_score(train_trades)
+    log.info(f"[BASELINE] proxy_expr_score={baseline_proxy_score:.6f}")
 
     # daily retrain models
     bucket_models, train_stats = train_bucket_models_daily(train_trades, series_map, run_tag=run_tag)
@@ -2065,11 +2087,21 @@ def main():
     cand["expr_score_raw"] = expr.astype(np.float32)
     cand["expr_valid"] = valid.astype(int)
 
-    if MISSING_BUCKET_FALLBACK == "zero":
-        cand["expr_score"] = np.where(cand["expr_valid"].values == 1, cand["expr_score_raw"].values, 0.0).astype(np.float32)
-    else:
+    missing_cnt = int((cand["expr_valid"].values == 0).sum())
+    fallback_mode = str(MISSING_BUCKET_FALLBACK).strip().lower()
+    if fallback_mode == "drop":
         cand = cand[cand["expr_valid"].values == 1].copy()
         cand["expr_score"] = cand["expr_score_raw"].astype(np.float32)
+    elif fallback_mode == "zero":
+        cand["expr_score"] = np.where(cand["expr_valid"].values == 1, cand["expr_score_raw"].values, 0.0).astype(np.float32)
+    else:
+        cand["expr_score"] = np.where(
+            cand["expr_valid"].values == 1,
+            cand["expr_score_raw"].values,
+            np.float32(baseline_proxy_score),
+        ).astype(np.float32)
+        fallback_mode = "baseline"
+    log.info(f"[CAND] missing_bucket_scores={missing_cnt:,} fallback_mode={fallback_mode}")
 
     # RR choice score
     rr_pred = rr_policy_predict(cand, rr_bucket, rr_global, Xc)
