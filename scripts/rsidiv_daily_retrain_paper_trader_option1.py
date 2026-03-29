@@ -1757,6 +1757,7 @@ def get_ohlc_at(series: SymSeries, day: pd.Timestamp) -> Optional[Tuple[float,fl
 def simulate_exit_from_entry(
     series: SymSeries,
     entry_day: pd.Timestamp,
+    eval_start_day: pd.Timestamp,
     side: str,
     entry_price: float,
     stop_price: float,
@@ -1765,7 +1766,7 @@ def simulate_exit_from_entry(
     cutoff_day: pd.Timestamp,
 ) -> Tuple[Optional[pd.Timestamp], Optional[str], Optional[float]]:
     """
-    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+    Walk forward from eval_start_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
     using DAILY OHLC to decide stop/target/time exits.
 
     Exit policy:
@@ -1780,10 +1781,14 @@ def simulate_exit_from_entry(
     Returns: (exit_day, exit_reason, exit_price). If no exit by cutoff_day => (None,None,None).
     """
     entry_day = pd.Timestamp(entry_day).normalize()
+    eval_start_day = pd.Timestamp(eval_start_day).normalize()
     cutoff_day = pd.Timestamp(cutoff_day).normalize()
     side = str(side).lower()
 
-    day64 = np.datetime64(entry_day.date())
+    if eval_start_day < entry_day:
+        eval_start_day = entry_day
+
+    day64 = np.datetime64(eval_start_day.date())
     i0 = np.searchsorted(series.dates64, day64)
     if i0 >= len(series.dates64) or series.dates64[i0] != day64:
         return None, None, None
@@ -2016,7 +2021,7 @@ def main():
             continue
 
         exit_day, reason, exit_price = simulate_exit_from_entry(
-            s, entry_day=entry_day, side=p.side,
+            s, entry_day=entry_day, eval_start_day=start_eval, side=p.side,
             entry_price=float(p.entry_price), stop_price=float(p.stop_price), target_price=float(p.target_price),
             max_hold_days=int(MAX_HOLD_DAYS), cutoff_day=cutoff
         )
@@ -2053,6 +2058,7 @@ def main():
             pnl=float(pnl),
             equity_before=float(eq_before),
             equity_after=float(equity),
+            eval_start_day=str(start_eval.date()),
             marked_to=str(cutoff.date()),
             model_run=str(run_date.date()),
         ))
