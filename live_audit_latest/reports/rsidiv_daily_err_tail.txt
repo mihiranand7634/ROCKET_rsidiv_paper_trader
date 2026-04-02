@@ -1,0 +1,427 @@
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.19 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   65f70d9..bd267c5  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0 23  130M   23 30.0M    0     0  14.9M      0  0:00:08  0:00:02  0:00:06 38.5M 60  130M   60 79.4M    0     0  26.0M      0  0:00:05  0:00:03  0:00:02 43.7M 76  130M   76  100M    0     0  23.4M      0  0:00:05  0:00:04  0:00:01 33.0M 99  130M   99  130M    0     0  25.8M      0  0:00:05  0:00:05 --:--:-- 34.2M100  130M  100  130M    0     0  25.9M      0  0:00:05  0:00:05 --:--:-- 34.3M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   bd267c5..d5ee1d9  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+   d5ee1d9..89e8369  main       -> origin/main
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.19 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   89e8369..566d9e4  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  7  130M    7 10.1M    0     0  7079k      0  0:00:18  0:00:01  0:00:17 12.7M 38  130M   38 50.0M    0     0  18.2M      0  0:00:07  0:00:02  0:00:05 24.1M 53  130M   53 70.1M    0     0  19.8M      0  0:00:06  0:00:03  0:00:03 24.5M 69  130M   69 90.3M    0     0  19.6M      0  0:00:06  0:00:04  0:00:02 23.0M 84  130M   84  110M    0     0  19.2M      0  0:00:06  0:00:05  0:00:01 21.8M100  130M  100  130M    0     0  20.7M      0  0:00:06  0:00:06 --:--:-- 24.9M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   566d9e4..70e53a6  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.23 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   70e53a6..6d08df4  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0 15  130M   15 20.3M    0     0  11.7M      0  0:00:11  0:00:01  0:00:10 34.0M 38  130M   38 49.8M    0     0  17.4M      0  0:00:07  0:00:02  0:00:05 28.9M 61  130M   61 79.7M    0     0  21.0M      0  0:00:06  0:00:03  0:00:03 30.0M 69  130M   69 90.3M    0     0  18.9M      0  0:00:06  0:00:04  0:00:02 24.8M 99  130M   99  130M    0     0  23.1M      0  0:00:05  0:00:05 --:--:-- 28.9M100  130M  100  130M    0     0  20.6M      0  0:00:06  0:00:06 --:--:-- 23.9M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   6d08df4..beb9458  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.26 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   beb9458..23e2ac1  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 30  130M   30 40.1M    0     0  25.5M      0  0:00:05  0:00:01  0:00:04 44.4M 53  130M   53 70.3M    0     0  26.0M      0  0:00:04  0:00:02  0:00:02 34.6M 84  130M   84  110M    0     0  29.8M      0  0:00:04  0:00:03  0:00:01 36.3M100  130M  100  130M    0     0  31.1M      0  0:00:04  0:00:04 --:--:-- 37.0M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   23e2ac1..b316c3b  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.30 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   b316c3b..21d59c9  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0 39935    0     0  30486      0  1:14:43  0:00:01  1:14:42 30486 22  130M   22 29.6M    0     0  15.2M      0  0:00:08  0:00:01  0:00:07 46.8M 45  130M   45 59.9M    0     0  20.9M      0  0:00:06  0:00:02  0:00:04 38.4M 53  130M   53 70.2M    0     0  18.1M      0  0:00:07  0:00:03  0:00:04 27.3M 69  130M   69 90.2M    0     0  18.4M      0  0:00:07  0:00:04  0:00:03 25.2M 99  130M   99  130M    0     0  21.5M      0  0:00:06  0:00:06 --:--:-- 27.5M100  130M  100  130M    0     0  21.5M      0  0:00:06  0:00:06 --:--:-- 24.5M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   21d59c9..6397b28  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.33 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   bc09fb2..ba3e8cd  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  7  130M    7 10.0M    0     0  9198k      0  0:00:14  0:00:01  0:00:13 9198k 23  130M   23 30.0M    0     0  13.6M      0  0:00:09  0:00:02  0:00:07 18.3M 46  130M   46 60.0M    0     0  19.4M      0  0:00:06  0:00:03  0:00:03 25.3M 69  130M   69 90.2M    0     0  22.7M      0  0:00:05  0:00:03  0:00:02 28.1M 99  130M   99  130M    0     0  26.3M      0  0:00:04  0:00:04 --:--:-- 31.4M100  130M  100  130M    0     0  25.1M      0  0:00:05  0:00:05 --:--:-- 29.6M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   ba3e8cd..9b6a9b3  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.37 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   9b6a9b3..fb3dfa7  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  7  130M    7 10.1M    0     0   9.9M      0  0:00:13  0:00:01  0:00:12  9.9M 30  130M   30 40.1M    0     0  19.9M      0  0:00:06  0:00:02  0:00:04 30.1M 53  130M   53 70.3M    0     0  19.0M      0  0:00:06  0:00:03  0:00:03 22.4M 61  130M   61 80.1M    0     0  19.9M      0  0:00:06  0:00:04  0:00:02 23.3M 84  130M   84  110M    0     0  21.7M      0  0:00:06  0:00:05  0:00:01 24.6M100  130M  100  130M    0     0  23.0M      0  0:00:05  0:00:05 --:--:-- 25.8M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   fb3dfa7..306fdba  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.40 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   306fdba..8f69a26  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 23  130M   23 30.1M    0     0  16.9M      0  0:00:07  0:00:01  0:00:06 30.7M 46  130M   46 60.1M    0     0  21.8M      0  0:00:05  0:00:02  0:00:03 30.7M 61  130M   61 80.1M    0     0  20.9M      0  0:00:06  0:00:03  0:00:03 26.5M 84  130M   84  110M    0     0  22.7M      0  0:00:05  0:00:04  0:00:01 27.2M 95  130M   95  124M    0     0  21.7M      0  0:00:05  0:00:05 --:--:-- 25.3M100  130M  100  130M    0     0  20.7M      0  0:00:06  0:00:06 --:--:-- 22.2M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   8f69a26..7b51ca7  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.41 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   7b51ca7..cd1778a  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 15  130M   15 20.1M    0     0  12.1M      0  0:00:10  0:00:01  0:00:09 12.1M 38  130M   38 50.3M    0     0  19.3M      0  0:00:06  0:00:02  0:00:04 32.0M 53  130M   53 70.0M    0     0  19.1M      0  0:00:06  0:00:03  0:00:03 25.0M 54  130M   54 70.9M    0     0  16.4M      0  0:00:07  0:00:04  0:00:03 19.1M 68  130M   68 89.6M    0     0  15.0M      0  0:00:08  0:00:05  0:00:03 16.1M 84  130M   84  109M    0     0  16.8M      0  0:00:07  0:00:06  0:00:01 18.4M 99  130M   99  130M    0     0  16.3M      0  0:00:07  0:00:07 --:--:-- 14.8M100  130M  100  130M    0     0  16.3M      0  0:00:07  0:00:07 --:--:-- 14.0M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   cd1778a..94cc39a  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.45 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   94cc39a..f556606  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  7  130M    7 10.3M    0     0  9753k      0  0:00:13  0:00:01  0:00:12 9753k 23  130M   23 30.1M    0     0  13.5M      0  0:00:09  0:00:02  0:00:07 17.3M 38  130M   38 50.1M    0     0  16.5M      0  0:00:07  0:00:03  0:00:04 20.4M 61  130M   61 80.1M    0     0  18.3M      0  0:00:07  0:00:04  0:00:03 21.3M 76  130M   76  100M    0     0  18.6M      0  0:00:06  0:00:05  0:00:01 20.9M 92  130M   92  120M    0     0  18.9M      0  0:00:06  0:00:06 --:--:-- 20.8M100  130M  100  130M    0     0  19.8M      0  0:00:06  0:00:06 --:--:-- 23.0M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   f556606..2ed0db8  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.48 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   2ed0db8..2284e8e  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 23  130M   23 30.0M    0     0  18.3M      0  0:00:07  0:00:01  0:00:06 25.3M 46  130M   46 60.1M    0     0  19.4M      0  0:00:06  0:00:03  0:00:03 22.7M 61  130M   61 80.1M    0     0  21.8M      0  0:00:05  0:00:03  0:00:02 24.9M 84  130M   84  110M    0     0  23.7M      0  0:00:05  0:00:04  0:00:01 26.2M 99  130M   99  130M    0     0  22.8M      0  0:00:05  0:00:05 --:--:-- 24.8M100  130M  100  130M    0     0  22.9M      0  0:00:05  0:00:05 --:--:-- 24.7M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   2284e8e..cf422e7  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.52 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   cf422e7..8a81aac  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  7  130M    7 10.1M    0     0  8504k      0  0:00:15  0:00:01  0:00:14 8504k 30  130M   30 40.1M    0     0  17.1M      0  0:00:07  0:00:02  0:00:05 26.8M 61  130M   61 79.6M    0     0  22.9M      0  0:00:05  0:00:03  0:00:02 30.9M 69  130M   69 90.5M    0     0  21.4M      0  0:00:06  0:00:04  0:00:02 26.8M 76  130M   76  100M    0     0  18.6M      0  0:00:06  0:00:05  0:00:01 21.7M 92  130M   92  120M    0     0  19.4M      0  0:00:06  0:00:06 --:--:-- 22.1M 96  130M   96  125M    0     0  17.3M      0  0:00:07  0:00:07 --:--:-- 17.4M100  130M  100  130M    0     0  16.7M      0  0:00:07  0:00:07 --:--:-- 11.8M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   8a81aac..251bd86  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.55 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   251bd86..65c7ca4  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 23  130M   23 30.0M    0     0  17.4M      0  0:00:07  0:00:01  0:00:06 31.2M 53  130M   53 69.7M    0     0  25.8M      0  0:00:05  0:00:02  0:00:03 36.1M 69  130M   69 90.1M    0     0  25.1M      0  0:00:05  0:00:03  0:00:02 31.9M 92  130M   92  120M    0     0  26.0M      0  0:00:05  0:00:04  0:00:01 31.1M100  130M  100  130M    0     0  24.9M      0  0:00:05  0:00:05 --:--:-- 29.2M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   65c7ca4..e127215  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.59 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   e127215..75d449c  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0  130M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 23  130M   23 30.1M    0     0  19.1M      0  0:00:06  0:00:01  0:00:05 33.1M 46  130M   46 60.1M    0     0  19.9M      0  0:00:06  0:00:03  0:00:03 25.6M 61  130M   61 80.1M    0     0  22.1M      0  0:00:05  0:00:03  0:00:02 27.1M 84  130M   84  109M    0     0  23.2M      0  0:00:05  0:00:04  0:00:01 27.0M 99  130M   99  130M    0     0  23.1M      0  0:00:05  0:00:05 --:--:-- 26.1M100  130M  100  130M    0     0  23.1M      0  0:00:05  0:00:05 --:--:-- 24.6M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   75d449c..05935eb  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.59 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   05935eb..4855ab7  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 15  130M   15 20.1M    0     0  14.2M      0  0:00:09  0:00:01  0:00:08 14.2M 38  130M   38 50.2M    0     0  20.8M      0  0:00:06  0:00:02  0:00:04 29.9M 61  130M   61 80.1M    0     0  23.5M      0  0:00:05  0:00:03  0:00:02 30.1M 91  130M   91  119M    0     0  26.2M      0  0:00:04  0:00:04 --:--:-- 31.6M 99  130M   99  130M    0     0  22.9M      0  0:00:05  0:00:05 --:--:-- 25.8M100  130M  100  130M    0     0  22.9M      0  0:00:05  0:00:05 --:--:-- 25.8M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   4855ab7..9e1aa16  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+/opt/rsidiv/scripts/update_ohlcv_7y.py:129: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = datetime.utcnow()
+/opt/rsidiv/scripts/update_ohlcv_7y.py:339: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+/opt/rsidiv/scripts/update_ohlcv_7y.py:81: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:121: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "generated_utc": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+remote: warning: See https://gh.io/lfs for more information.        
+remote: warning: File data/ohlcv_master.csv.gz is 73.60 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   9e1aa16..70b8526  HEAD -> main
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 15  130M   15 20.2M    0     0  11.7M      0  0:00:11  0:00:01  0:00:10 15.7M 30  130M   30 40.1M    0     0  16.4M      0  0:00:07  0:00:02  0:00:05 20.1M 61  130M   61 80.2M    0     0  21.8M      0  0:00:05  0:00:03  0:00:02 24.8M 77  130M   77  100M    0     0  22.4M      0  0:00:05  0:00:04  0:00:01 24.9M 99  130M   99  130M    0     0  23.6M      0  0:00:05  0:00:05 --:--:-- 25.7M100  130M  100  130M    0     0  23.6M      0  0:00:05  0:00:05 --:--:-- 29.1M
+To github.com:mihiranand7634/ROCKET_rsidiv_paper_trader.git
+   70b8526..de2d570  HEAD -> main
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+   de2d570..fb9151c  main       -> origin/main
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+error: Your local changes to the following files would be overwritten by merge:
+	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Please commit your changes or stash them before you merge.
+Aborting
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+error: Your local changes to the following files would be overwritten by merge:
+	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Please commit your changes or stash them before you merge.
+Aborting
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+error: Your local changes to the following files would be overwritten by merge:
+	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Please commit your changes or stash them before you merge.
+Aborting
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+   fb9151c..1daa7f4  main       -> origin/main
+Already on 'main'
+From github.com:mihiranand7634/ROCKET_rsidiv_paper_trader
+ * branch            main       -> FETCH_HEAD
+error: Your local changes to the following files would be overwritten by merge:
+	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Please commit your changes or stash them before you merge.
+Aborting

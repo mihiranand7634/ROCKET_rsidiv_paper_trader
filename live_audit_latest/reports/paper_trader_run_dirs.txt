@@ -1,0 +1,6 @@
+/opt/rsidiv/paper_trader_out/run
+/opt/rsidiv/paper_trader_out/run/20260323
+/opt/rsidiv/paper_trader_out/run/20260324
+/opt/rsidiv/paper_trader_out/run/20260325
+/opt/rsidiv/paper_trader_out/run/20260326
+/opt/rsidiv/paper_trader_out/run/20260327

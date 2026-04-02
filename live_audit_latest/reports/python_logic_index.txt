@@ -1,0 +1,242 @@
+===== PYTHON/SH LOGIC INDEX =====
+
+===== FILE: /opt/rsidiv/bin/common.sh =====
+168:import json, os
+
+===== FILE: /opt/rsidiv/bin/run_backfill_once.sh =====
+
+===== FILE: /opt/rsidiv/bin/run_daily_lightsail_workflow.sh =====
+
+===== FILE: /opt/rsidiv/scripts/backfill_ohlcv_7y.py =====
+19:import os
+20:import re
+21:import csv
+22:import json
+23:import gzip
+24:import time
+25:from datetime import datetime, timedelta, date
+26:from typing import Dict, List, Tuple
+28:from kiteconnect import KiteConnect
+49:def _is_etf_symbol(sym: str) -> bool:
+54:def _read_token(path: str) -> dict:
+59:def _mkdirp(path: str):
+64:def _throttle(last_ts: float, rps: float) -> float:
+75:def _retry(fn, *args, **kwargs):
+86:def _parse_ohlcv_fname(fn: str):
+91:def _prune_old_files(out_dir: str, keep_days: int):
+118:def _find_reference_token(eq_rows):
+127:def _latest_completed_trading_day(kite: KiteConnect, ref_token: int) -> date:
+137:def _write_daily_files(out_dir: str, by_date_rows: dict):
+151:def _iter_windows(start_day: date, end_day: date, max_days: int):
+160:def main():
+
+===== FILE: /opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py =====
+21:from __future__ import annotations
+23:import os
+24:import re
+25:import glob
+26:from dataclasses import dataclass
+27:from typing import List, Tuple, Optional, Dict
+29:import numpy as np
+30:import pandas as pd
+31:from pandas.tseries.offsets import BDay
+59:def compute_rsi(close: pd.Series, period: int = 14) -> pd.Series:
+69:def atr_wilder(df: pd.DataFrame, period: int = 14) -> pd.Series:
+87:def zigzag_atr_confirmed(df: pd.DataFrame,
+155:class Divergence:
+163:def detect_divergences_multi(df: pd.DataFrame,
+220:def _list_daily_files(dir_path: str) -> List[str]:
+225:def _date_from_fname(path: str) -> pd.Timestamp:
+231:def load_daily_store_last_n(dir_path: str, last_n_files: int) -> Tuple[pd.DataFrame, pd.Timestamp]:
+263:def main():
+
+===== FILE: /opt/rsidiv/scripts/build_ohlcv_master_from_daily.py =====
+26:import os
+27:import re
+28:import csv
+29:import json
+30:import gzip
+31:from datetime import datetime, timedelta
+43:def _list_daily_files(daily_dir: str):
+61:def _iter_rows_from_daily(fp: str):
+74:def main():
+
+===== FILE: /opt/rsidiv/scripts/check_paper_trader_summary.py =====
+32:from __future__ import annotations
+36:import json
+38:from pathlib import Path
+40:from typing import Optional, Tuple, List
+44:import pandas as pd
+74:def safe_read_csv(path: Path) -> pd.DataFrame:
+102:def safe_read_json(path: Path) -> dict:
+124:def pick_first_existing(df: pd.DataFrame, candidates: List[str]) -> Optional[str]:
+138:def to_num(s: pd.Series) -> pd.Series:
+146:def print_df_head(df: pd.DataFrame, title: str, n: int = 10) -> None:
+164:def latest_run_dir(run_dir: Path) -> Optional[Path]:
+178:def summarize_ledger(ledger_df: pd.DataFrame) -> Tuple[dict, Optional[str], Optional[str]]:
+290:def print_kv(d: dict) -> None:
+306:def main() -> None:
+
+===== FILE: /opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py =====
+4:import os
+5:import pandas as pd
+10:def norm_day(x):
+13:def main():
+
+===== FILE: /opt/rsidiv/scripts/get_kite_access_token_selenium.py =====
+4:import os
+5:import json
+6:import time
+7:import traceback
+8:from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+10:import pyotp
+11:from kiteconnect import KiteConnect
+13:from selenium import webdriver
+14:from selenium.webdriver.common.by import By
+15:from selenium.webdriver.common.keys import Keys
+16:from selenium.webdriver.chrome.options import Options
+17:from selenium.webdriver.chrome.service import Service
+18:from selenium.webdriver.support.ui import WebDriverWait
+19:from selenium.webdriver.support import expected_conditions as EC
+34:def need_env(name: str) -> str:
+41:def mkdirp(path: str):
+46:def mkdirp_for_file(path: str):
+50:def extract_request_token(url: str) -> str:
+58:def redact_url(url: str) -> str:
+71:def save_debug(driver, tag: str):
+89:def js_click(driver, el):
+94:def try_click_submit(driver, wait: WebDriverWait):
+124:def maybe_request_token(driver) -> str | None:
+129:def wait_for_request_token_or_2fa(driver, wait: WebDriverWait, timeout_s: int = 90) -> str:
+209:def main():
+
+===== FILE: /opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py =====
+30:import os
+31:import re
+32:import sys
+33:import json
+34:import time
+35:import math
+36:import zipfile
+37:import logging
+38:import tempfile
+39:import hashlib
+40:from dataclasses import dataclass, asdict
+41:from datetime import datetime
+42:from typing import Dict, Tuple, List, Optional
+43:from collections import deque, Counter
+45:import numpy as np
+46:import pandas as pd
+47:import joblib
+48:from pandas.tseries.offsets import BDay
+50:from sklearn.linear_model import RidgeClassifier, LogisticRegression, Ridge
+51:from sklearn.ensemble import RandomForestClassifier
+52:from sklearn.metrics import average_precision_score, roc_auc_score
+214:def s_day(series: pd.Series, fmt: Optional[str] = None, default_dayfirst: bool = False) -> pd.Series:
+222:def assert_day_dt(df: pd.DataFrame, col: str, name: str = ""):
+231:def _date_part(s: str) -> str:
+241:def _tokenize_numeric_date(dp: str):
+251:def infer_date_format_from_samples(samples, default_dayfirst=False):
+340:def parse_date_series_with_inference(series: pd.Series, default_dayfirst=False, sample_n=300):
+360:class SymSeries:
+367:def _is_etf_symbol(sym):
+371:def _find_ohlcv_columns(head_cols):
+382:def dedupe_duplicate_dates_closest_close(df_sym):
+422:def add_gap_segments(px: pd.DataFrame) -> pd.DataFrame:
+429:def compute_atr_from_ohlc(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int) -> np.ndarray:
+442:def _series_cache_key(csv_path: str, symbols_needed: List[str]) -> str:
+449:def load_ohlcv_subset_build_series(csv_path: str, symbols_needed: List[str], atr_period_default: int):
+591:class RocketKernel:
+599:class RocketFeaturizer:
+657:def normalize_kernels_dict(kernels) -> Dict[int, int]:
+660:def normalize_rocket_cfg(cfg: dict) -> dict:
+666:def build_featurizers(rocket_cfg: dict, seed: int) -> Dict[int, RocketFeaturizer]:
+675:def rocket_feature_dim(rocket_cfg: dict) -> int:
+679:def build_windows_for_batch_rows(symbols: np.ndarray,
+725:def _rocket_memmap_path(prefix: str) -> str:
+731:def compute_rocket_features_memmap_for_df(df: pd.DataFrame, series_map: Dict[str, SymSeries], rocket_cfg: dict, seed: int,
+788:def materialize_feature_rows(mmap_path: str, n_rows: int, d: int, row_idx: np.ndarray,
+800:def materialize_feature_all(mmap_path: str, n_rows: int, d: int,
+811:def add_cs_z_rank_inplace(df: pd.DataFrame, cols: List[str], group_col: str) -> List[str]:
+833:class PlattCalibrator:
+840:def fit_platt(scores: np.ndarray, y: np.ndarray) -> Optional[PlattCalibrator]:
+848:def sigmoid(x: np.ndarray) -> np.ndarray:
+857:class Stage2MagModel:
+862:def _make_bins_from_quantiles(x: np.ndarray, qs: List[float]) -> np.ndarray:
+880:def _bin_indices(x: np.ndarray, edges: np.ndarray) -> np.ndarray:
+886:def _bin_representatives(x: np.ndarray, ybin: np.ndarray, k: int) -> np.ndarray:
+899:def train_mag_bin_model(x_mag: np.ndarray, X: np.ndarray) -> Optional[Stage2MagModel]:
+911:def predict_mag_expectation(model: Optional[Stage2MagModel], X: np.ndarray) -> np.ndarray:
+919:class Stage1Model:
+924:def train_stage1(X_tr: np.ndarray, y_tr: np.ndarray, X_va: np.ndarray, y_va: np.ndarray, sample_weight: np.ndarray) -> Stage1Model:
+934:def predict_pwin(stage1: Stage1Model, X: np.ndarray) -> np.ndarray:
+942:class BucketModels:
+952:class RRPolicyPack:
+964:class GateEvent:
+977:class GateState:
+988:class RollingWRThrottleGate:
+1163:class OpenPos:
+1181:class PendingOrder:
+1200:def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
+1203:def _daily_capacity(equity: float, open_positions: List[OpenPos], pending_orders: Optional[List[PendingOrder]] = None) -> Tuple[int, float]:
+1214:def load_state():
+1223:def save_state(st: dict):
+1227:def load_open_positions() -> List[OpenPos]:
+1242:def save_open_positions(ops: List[OpenPos]):
+1249:def load_pending_orders() -> List[PendingOrder]:
+1264:def save_pending_orders(orders: List[PendingOrder]):
+1271:def append_ledger(rows: List[dict]):
+1283:def load_ledger() -> pd.DataFrame:
+1292:def ensure_ledger_file():
+1310:def _num_to_float(s: str) -> float:
+1313:def resolve_root_dir(path_in, extract_to_dir):
+1325:def locate_portfolio_run_dir(root_dir):
+1334:def locate_trades_dir(portfolio_run_dir):
+1343:def load_all_trades_from_dir(trades_dir: str) -> pd.DataFrame:
+1412:def apply_gap_skip(trades: pd.DataFrame, seg_map: pd.DataFrame) -> pd.DataFrame:
+1432:def pick_val_dates(train_dates: np.ndarray) -> set:
+1441:def subsample_stratified(df: pd.DataFrame, ycol: str, nmax: int, seed: int) -> pd.DataFrame:
+1460:def subsample_random(df: pd.DataFrame, nmax: int, seed: int) -> pd.DataFrame:
+1471:def build_training_window(run_date: pd.Timestamp) -> Tuple[pd.Timestamp, pd.Timestamp]:
+1476:def build_static_features(df: pd.DataFrame) -> Tuple[np.ndarray, List[str]]:
+1497:def score_expr(bucket_models: Dict[Tuple[str,str], BucketModels], X: np.ndarray, regimes: np.ndarray, sides: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+1517:def train_bucket_models_daily(train_df: pd.DataFrame, series_map: Dict[str, SymSeries], run_tag: str) -> Tuple[Dict[Tuple[str,str], BucketModels], pd.DataFrame]:
+1626:def train_rr_policy_daily(train_df: pd.DataFrame, series_map: Dict[str, SymSeries], run_tag: str) -> Tuple[Dict[Tuple[str,str,float,float], RRPolicyPack], Dict[Tuple[float,float], RRPolicyPack], pd.DataFrame]:
+1690:def rr_policy_predict(df: pd.DataFrame, bucket_rr: Dict[Tuple[str,str,float,float], RRPolicyPack], global_rr: Dict[Tuple[float,float], RRPolicyPack],
+1729:def load_divergences(fp: str) -> pd.DataFrame:
+1749:def kind_to_side_regime(kind: str) -> Tuple[str, str]:
+1761:def make_rr_candidates(div_df: pd.DataFrame, run_date: pd.Timestamp) -> pd.DataFrame:
+1808:def get_ohlc_at(series: SymSeries, day: pd.Timestamp) -> Optional[Tuple[float,float,float,float,float]]:
+1820:def get_ohlc_on_or_before(series: SymSeries, day: pd.Timestamp) -> Optional[Tuple[pd.Timestamp,float,float,float,float,float]]:
+1832:def get_daily_file_open(symbol: str, day: pd.Timestamp) -> Optional[Tuple[float, float, float, float]]:
+1851:def simulate_exit_from_entry(
+1935:def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
+1944:def qty_from_risk(risk_amt: float, entry_price: float, stop_price: float, side: str) -> int:
+1957:def get_run_date() -> pd.Timestamp:
+1967:def load_or_init_gate() -> RollingWRThrottleGate:
+1978:def save_gate(g: RollingWRThrottleGate):
+1982:def main():
+
+===== FILE: /opt/rsidiv/scripts/update_ohlcv_7y.py =====
+22:import os
+23:import re
+24:import csv
+25:import json
+26:import gzip
+27:import time
+28:import threading
+29:from datetime import datetime, timedelta
+30:from concurrent.futures import ThreadPoolExecutor, as_completed
+32:from kiteconnect import KiteConnect
+62:def _is_etf_symbol(sym: str) -> bool:
+67:def _read_token(path: str) -> dict:
+72:def _parse_ohlcv_fname(fn: str):
+79:def _prune_old_files(out_dir: str, keep_days: int):
+106:def _retry_call(fn, *args, **kwargs):
+118:def _find_reference_token(inst_rows):
+128:def _latest_completed_trading_day(kite: KiteConnect, ref_token: int) -> datetime.date:
+139:def _write_gz_csv(path: str, rows):
+151:class GlobalRateLimiter:
+181:def _get_kite_client(api_key: str, access_token: str) -> KiteConnect:
+190:def _fetch_one_symbol_daily(
+222:def main():

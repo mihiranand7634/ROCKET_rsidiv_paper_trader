@@ -1,0 +1,600 @@
+[PROGRESS] 1200/9371 rows=59 skipped=1141 elapsed=533.1s eff_rps=2.25
+[PROGRESS] 1400/9371 rows=64 skipped=1336 elapsed=622.0s eff_rps=2.25
+[PROGRESS] 1600/9371 rows=69 skipped=1531 elapsed=710.9s eff_rps=2.25
+[PROGRESS] 1800/9371 rows=69 skipped=1731 elapsed=799.9s eff_rps=2.25
+[PROGRESS] 2000/9371 rows=69 skipped=1931 elapsed=888.8s eff_rps=2.25
+[PROGRESS] 2200/9371 rows=74 skipped=2126 elapsed=977.7s eff_rps=2.25
+[PROGRESS] 2400/9371 rows=76 skipped=2324 elapsed=1066.6s eff_rps=2.25
+[PROGRESS] 2600/9371 rows=79 skipped=2521 elapsed=1155.5s eff_rps=2.25
+[PROGRESS] 2800/9371 rows=83 skipped=2717 elapsed=1244.5s eff_rps=2.25
+[PROGRESS] 3000/9371 rows=89 skipped=2911 elapsed=1333.4s eff_rps=2.25
+[PROGRESS] 3200/9371 rows=93 skipped=3107 elapsed=1422.3s eff_rps=2.25
+[PROGRESS] 3400/9371 rows=94 skipped=3306 elapsed=1511.2s eff_rps=2.25
+[PROGRESS] 3600/9371 rows=97 skipped=3503 elapsed=1600.1s eff_rps=2.25
+[PROGRESS] 3800/9371 rows=99 skipped=3701 elapsed=1689.1s eff_rps=2.25
+[PROGRESS] 4000/9371 rows=100 skipped=3900 elapsed=1778.0s eff_rps=2.25
+[PROGRESS] 4200/9371 rows=103 skipped=4097 elapsed=1866.9s eff_rps=2.25
+[PROGRESS] 4400/9371 rows=107 skipped=4293 elapsed=1955.8s eff_rps=2.25
+[PROGRESS] 4600/9371 rows=109 skipped=4491 elapsed=2044.7s eff_rps=2.25
+[PROGRESS] 4800/9371 rows=109 skipped=4691 elapsed=2133.7s eff_rps=2.25
+[PROGRESS] 5000/9371 rows=120 skipped=4880 elapsed=2222.6s eff_rps=2.25
+[PROGRESS] 5200/9371 rows=144 skipped=5056 elapsed=2311.5s eff_rps=2.25
+[PROGRESS] 5400/9371 rows=183 skipped=5217 elapsed=2400.4s eff_rps=2.25
+[PROGRESS] 5600/9371 rows=214 skipped=5386 elapsed=2489.3s eff_rps=2.25
+[PROGRESS] 5800/9371 rows=299 skipped=5501 elapsed=2578.3s eff_rps=2.25
+[PROGRESS] 6000/9371 rows=478 skipped=5522 elapsed=2667.2s eff_rps=2.25
+[PROGRESS] 6200/9371 rows=651 skipped=5549 elapsed=2756.1s eff_rps=2.25
+[PROGRESS] 6400/9371 rows=828 skipped=5572 elapsed=2845.0s eff_rps=2.25
+[PROGRESS] 6600/9371 rows=1000 skipped=5600 elapsed=2933.9s eff_rps=2.25
+[PROGRESS] 6800/9371 rows=1187 skipped=5613 elapsed=3022.9s eff_rps=2.25
+[PROGRESS] 7000/9371 rows=1329 skipped=5671 elapsed=3111.8s eff_rps=2.25
+[PROGRESS] 7200/9371 rows=1470 skipped=5730 elapsed=3200.7s eff_rps=2.25
+[PROGRESS] 7400/9371 rows=1656 skipped=5744 elapsed=3289.6s eff_rps=2.25
+[PROGRESS] 7600/9371 rows=1817 skipped=5783 elapsed=3378.5s eff_rps=2.25
+[PROGRESS] 7800/9371 rows=1972 skipped=5828 elapsed=3467.5s eff_rps=2.25
+[PROGRESS] 8000/9371 rows=2141 skipped=5859 elapsed=3556.4s eff_rps=2.25
+[PROGRESS] 8200/9371 rows=2322 skipped=5878 elapsed=3645.3s eff_rps=2.25
+[PROGRESS] 8400/9371 rows=2507 skipped=5893 elapsed=3734.2s eff_rps=2.25
+[PROGRESS] 8600/9371 rows=2690 skipped=5910 elapsed=3823.1s eff_rps=2.25
+[PROGRESS] 8800/9371 rows=2856 skipped=5944 elapsed=3912.1s eff_rps=2.25
+[PROGRESS] 9000/9371 rows=3044 skipped=5956 elapsed=4001.0s eff_rps=2.25
+[PROGRESS] 9200/9371 rows=3225 skipped=5975 elapsed=4089.9s eff_rps=2.25
+[PROGRESS] 9371/9371 rows=3388 skipped=5983 elapsed=4165.9s eff_rps=2.25
+[WRITE] /opt/rsidiv/data/ohlcv_daily/ohlcv_2026-03-25.csv.gz rows=3388 skipped=5983
+[PRUNE] kept=1831 removed=0
+2026-03-25 21:11:09 | Building ohlcv_master.csv.gz
+[BUILD] files=60/1824 rows=97,141 last=2019-05-22
+[BUILD] files=120/1824 rows=194,668 last=2019-08-19
+[BUILD] files=180/1824 rows=293,515 last=2019-11-19
+[BUILD] files=240/1824 rows=388,490 last=2020-02-06
+[BUILD] files=300/1824 rows=452,577 last=2020-04-06
+[BUILD] files=360/1824 rows=519,643 last=2020-06-05
+[BUILD] files=420/1824 rows=590,533 last=2020-08-04
+[BUILD] files=480/1824 rows=689,377 last=2020-10-26
+[BUILD] files=540/1824 rows=794,045 last=2021-01-20
+[BUILD] files=600/1824 rows=900,920 last=2021-04-22
+[BUILD] files=660/1824 rows=1,010,372 last=2021-07-16
+[BUILD] files=720/1824 rows=1,122,975 last=2021-10-13
+[BUILD] files=780/1824 rows=1,239,228 last=2022-01-10
+[BUILD] files=840/1824 rows=1,357,057 last=2022-04-06
+[BUILD] files=900/1824 rows=1,479,379 last=2022-07-04
+[BUILD] files=960/1824 rows=1,604,042 last=2022-09-29
+[BUILD] files=1020/1824 rows=1,732,559 last=2022-12-27
+[BUILD] files=1080/1824 rows=1,864,325 last=2023-03-23
+[BUILD] files=1140/1824 rows=1,999,256 last=2023-06-22
+[BUILD] files=1200/1824 rows=2,138,450 last=2023-09-18
+[BUILD] files=1260/1824 rows=2,283,731 last=2023-12-15
+[BUILD] files=1320/1824 rows=2,434,737 last=2024-03-12
+[BUILD] files=1380/1824 rows=2,590,576 last=2024-06-11
+[BUILD] files=1440/1824 rows=2,751,884 last=2024-09-06
+[BUILD] files=1500/1824 rows=2,919,485 last=2024-12-04
+[BUILD] files=1560/1824 rows=3,090,848 last=2025-02-27
+[BUILD] files=1620/1824 rows=3,266,870 last=2025-05-30
+[BUILD] files=1680/1824 rows=3,447,331 last=2025-08-25
+[BUILD] files=1740/1824 rows=3,635,576 last=2025-11-21
+[BUILD] files=1800/1824 rows=3,830,355 last=2026-02-17
+[DONE] master=/opt/rsidiv/data/ohlcv_master.csv.gz files=1824 rows=3,909,318 range=2019-02-20..2026-03-25
+[META] /opt/rsidiv/data/ohlcv_master_meta.json
+[main 75d449c] Update OHLCV daily store + master
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+ create mode 100644 data/ohlcv_daily/ohlcv_2026-03-25.csv.gz
+2026-03-25 21:12:14 | Downloading portfolio_run.zip from public release URL
+-rw-r--r-- 1 ubuntu ubuntu 131M Mar 25 21:12 /opt/rsidiv/data/portfolio_run.zip
+2026-03-25 21:12:20 | Building divergence signals
+[PROGRESS] 150/3139 processed, found=5
+[PROGRESS] 300/3139 processed, found=16
+[PROGRESS] 450/3139 processed, found=35
+[PROGRESS] 600/3139 processed, found=49
+[PROGRESS] 750/3139 processed, found=61
+[PROGRESS] 900/3139 processed, found=71
+[PROGRESS] 1050/3139 processed, found=83
+[PROGRESS] 1200/3139 processed, found=92
+[PROGRESS] 1350/3139 processed, found=106
+[PROGRESS] 1500/3139 processed, found=119
+[PROGRESS] 1650/3139 processed, found=124
+[PROGRESS] 1800/3139 processed, found=135
+[PROGRESS] 1950/3139 processed, found=154
+[PROGRESS] 2100/3139 processed, found=170
+[PROGRESS] 2250/3139 processed, found=181
+[PROGRESS] 2400/3139 processed, found=193
+[PROGRESS] 2550/3139 processed, found=202
+[PROGRESS] 2700/3139 processed, found=214
+[PROGRESS] 2850/3139 processed, found=226
+[PROGRESS] 3000/3139 processed, found=237
+==========================================================
+[DONE] target_day=2026-03-25 symbols_loaded=3139 signals=242
+[OUT] /opt/rsidiv/signals/divergences_2026-03-25.csv
+[OUT] /opt/rsidiv/signals/divergences_latest.csv
+==========================================================
+2026-03-25 21:12:47 | Running paper trader
+2026-03-25 21:12:49,788 | INFO | [RUN] run_date=2026-03-25 cutoff=2026-03-25
+2026-03-25 21:12:54,460 | INFO | [TRAINSET] rows=409,647 symbols=2,145 window=2021-03-25..2026-03-25
+2026-03-25 21:12:54,615 | INFO | [OHLCV][DATEFMT] fmt=%Y-%m-%d note=year_first_ymd
+2026-03-25 21:13:01,937 | INFO | [OHLCV] subset rows=2,930,360 symbols=2,139
+2026-03-25 21:13:07,832 | INFO | [OHLCV] after dedupe rows=2,930,256 dup=0
+2026-03-25 21:13:20,551 | INFO | [OHLCV][CACHE] saved series=paper_trader_out/caches/series_cache_ohlcv_master.csv.gz_gap7_m1774453305885990403_sz77164706_sy106d23c8199a.pkl seg=paper_trader_out/caches/seg_map_ohlcv_master.csv.gz_gap7_m1774453305885990403_sz77164706_sy106d23c8199a.pkl
+2026-03-25 21:13:27,149 | INFO | [GAP] forced_skips=8,917 kept_train=400,730
+2026-03-25 21:17:10,277 | INFO | [TRAIN 20260325][bull/long] ok_rate=0.995 n_train=20,000 n_val=8,000 PR=0.7172 ROC=0.7297
+2026-03-25 21:18:37,666 | INFO | [TRAIN 20260325][bull/short] ok_rate=0.997 n_train=20,000 n_val=7,292 PR=0.7817 ROC=0.7627
+2026-03-25 21:19:56,429 | INFO | [TRAIN 20260325][bear/long] ok_rate=0.996 n_train=20,000 n_val=8,000 PR=0.6985 ROC=0.7051
+2026-03-25 21:21:15,478 | INFO | [TRAIN 20260325][bear/short] ok_rate=0.997 n_train=20,000 n_val=8,000 PR=0.7060 ROC=0.7153
+2026-03-25 21:24:14,946 | INFO | [FILL] activated=23 pending_left=2 skip_reasons={'missing_entry_day_ohlc': 2}
+2026-03-25 21:24:15,013 | INFO | [EXITS] closed=9 equity_now=932,884.99
+2026-03-25 21:24:15,949 | INFO | [DONE] orders=6 pending_orders=8 open_positions=58 equity=932,884.99 elapsed=686.2s
+2026-03-25 21:24:21 | Exporting closed paper trades to rolling trainset
+Wrote data/train_trades_closed.csv: 150 rows (added/updated 13)
+2026-03-25 21:24:23 | Pruning old run folders older than 45 days
+[main 05935eb] paper-trade: update signals/state/orders
+ 12 files changed, 591 insertions(+), 198 deletions(-)
+ create mode 100644 paper_trader_out/run/20260325/candidates_scored.csv
+ create mode 100644 paper_trader_out/run/20260325/orders_to_place.csv
+ create mode 100644 paper_trader_out/run/20260325/selected_trades.csv
+2026-03-25 21:24:26 | ========== DAILY WORKFLOW SUCCESS ==========
+2026-03-26 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is up to date with 'origin/main'.
+Already up to date.
+2026-03-26 20:00:05 | ========== DAILY WORKFLOW START ==========
+2026-03-26 20:00:05 | Refreshing Kite token
+OK: token saved -> /opt/kite/secrets/kite_access_token.json
+user_id=AHJ859 token_last4=GrMq
+token_ok path=/opt/kite/secrets/kite_access_token.json user_id=AHJ859 generated_at=1774535502 token_last4=GrMq
+2026-03-26 20:01:42 | Running DAILY OHLCV UPDATE stage
+[OHLCV] Already exists: /opt/rsidiv/data/ohlcv_daily/ohlcv_2026-03-25.csv.gz (skipping fetch)
+[PRUNE] kept=1831 removed=0
+2026-03-26 20:01:43 | Building ohlcv_master.csv.gz
+[BUILD] files=60/1824 rows=97,141 last=2019-05-22
+[BUILD] files=120/1824 rows=194,668 last=2019-08-19
+[BUILD] files=180/1824 rows=293,515 last=2019-11-19
+[BUILD] files=240/1824 rows=388,490 last=2020-02-06
+[BUILD] files=300/1824 rows=452,577 last=2020-04-06
+[BUILD] files=360/1824 rows=519,643 last=2020-06-05
+[BUILD] files=420/1824 rows=590,533 last=2020-08-04
+[BUILD] files=480/1824 rows=689,377 last=2020-10-26
+[BUILD] files=540/1824 rows=794,045 last=2021-01-20
+[BUILD] files=600/1824 rows=900,920 last=2021-04-22
+[BUILD] files=660/1824 rows=1,010,372 last=2021-07-16
+[BUILD] files=720/1824 rows=1,122,975 last=2021-10-13
+[BUILD] files=780/1824 rows=1,239,228 last=2022-01-10
+[BUILD] files=840/1824 rows=1,357,057 last=2022-04-06
+[BUILD] files=900/1824 rows=1,479,379 last=2022-07-04
+[BUILD] files=960/1824 rows=1,604,042 last=2022-09-29
+[BUILD] files=1020/1824 rows=1,732,559 last=2022-12-27
+[BUILD] files=1080/1824 rows=1,864,325 last=2023-03-23
+[BUILD] files=1140/1824 rows=1,999,256 last=2023-06-22
+[BUILD] files=1200/1824 rows=2,138,450 last=2023-09-18
+[BUILD] files=1260/1824 rows=2,283,731 last=2023-12-15
+[BUILD] files=1320/1824 rows=2,434,737 last=2024-03-12
+[BUILD] files=1380/1824 rows=2,590,576 last=2024-06-11
+[BUILD] files=1440/1824 rows=2,751,884 last=2024-09-06
+[BUILD] files=1500/1824 rows=2,919,485 last=2024-12-04
+[BUILD] files=1560/1824 rows=3,090,848 last=2025-02-27
+[BUILD] files=1620/1824 rows=3,266,870 last=2025-05-30
+[BUILD] files=1680/1824 rows=3,447,331 last=2025-08-25
+[BUILD] files=1740/1824 rows=3,635,576 last=2025-11-21
+[BUILD] files=1800/1824 rows=3,830,355 last=2026-02-17
+[DONE] master=/opt/rsidiv/data/ohlcv_master.csv.gz files=1824 rows=3,909,318 range=2019-02-20..2026-03-25
+[META] /opt/rsidiv/data/ohlcv_master_meta.json
+[main 4855ab7] Update OHLCV daily store + master
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+2026-03-26 20:02:30 | Downloading portfolio_run.zip from public release URL
+-rw-r--r-- 1 ubuntu ubuntu 131M Mar 26 20:02 /opt/rsidiv/data/portfolio_run.zip
+2026-03-26 20:02:36 | Building divergence signals
+[PROGRESS] 150/3139 processed, found=5
+[PROGRESS] 300/3139 processed, found=16
+[PROGRESS] 450/3139 processed, found=35
+[PROGRESS] 600/3139 processed, found=49
+[PROGRESS] 750/3139 processed, found=61
+[PROGRESS] 900/3139 processed, found=71
+[PROGRESS] 1050/3139 processed, found=83
+[PROGRESS] 1200/3139 processed, found=92
+[PROGRESS] 1350/3139 processed, found=106
+[PROGRESS] 1500/3139 processed, found=119
+[PROGRESS] 1650/3139 processed, found=124
+[PROGRESS] 1800/3139 processed, found=135
+[PROGRESS] 1950/3139 processed, found=154
+[PROGRESS] 2100/3139 processed, found=170
+[PROGRESS] 2250/3139 processed, found=181
+[PROGRESS] 2400/3139 processed, found=193
+[PROGRESS] 2550/3139 processed, found=202
+[PROGRESS] 2700/3139 processed, found=214
+[PROGRESS] 2850/3139 processed, found=226
+[PROGRESS] 3000/3139 processed, found=237
+==========================================================
+[DONE] target_day=2026-03-25 symbols_loaded=3139 signals=242
+[OUT] /opt/rsidiv/signals/divergences_2026-03-25.csv
+[OUT] /opt/rsidiv/signals/divergences_latest.csv
+==========================================================
+2026-03-26 20:03:02 | Running paper trader
+2026-03-26 20:03:04,662 | INFO | [RUN] run_date=2026-03-26 cutoff=2026-03-26
+2026-03-26 20:03:08,013 | INFO | [TRAINSET] rows=409,201 symbols=2,148 window=2021-03-26..2026-03-26
+2026-03-26 20:03:08,041 | INFO | [OHLCV][DATEFMT] fmt=%Y-%m-%d note=year_first_ymd
+2026-03-26 20:03:15,417 | INFO | [OHLCV] subset rows=2,930,360 symbols=2,139
+2026-03-26 20:03:19,900 | INFO | [OHLCV] after dedupe rows=2,930,256 dup=0
+2026-03-26 20:03:31,100 | INFO | [OHLCV][CACHE] saved series=paper_trader_out/caches/series_cache_ohlcv_master.csv.gz_gap7_m1774535540024280046_sz77164706_sy106d23c8199a.pkl seg=paper_trader_out/caches/seg_map_ohlcv_master.csv.gz_gap7_m1774535540024280046_sz77164706_sy106d23c8199a.pkl
+2026-03-26 20:03:35,566 | INFO | [GAP] forced_skips=8,917 kept_train=400,284
+2026-03-26 20:07:11,079 | INFO | [TRAIN 20260326][bull/long] ok_rate=0.995 n_train=20,000 n_val=8,000 PR=0.7201 ROC=0.7300
+2026-03-26 20:08:36,024 | INFO | [TRAIN 20260326][bull/short] ok_rate=0.997 n_train=20,000 n_val=7,292 PR=0.7817 ROC=0.7627
+2026-03-26 20:09:54,238 | INFO | [TRAIN 20260326][bear/long] ok_rate=0.996 n_train=20,000 n_val=8,000 PR=0.6940 ROC=0.7037
+2026-03-26 20:11:12,788 | INFO | [TRAIN 20260326][bear/short] ok_rate=0.997 n_train=20,000 n_val=8,000 PR=0.7067 ROC=0.7191
+2026-03-26 20:14:11,290 | INFO | [FILL] activated=0 pending_left=8 skip_reasons={'missing_entry_day_ohlc': 8}
+2026-03-26 20:14:11,394 | INFO | [CAND] no candidates for next session; writing empty outputs.
+2026-03-26 20:14:17 | Exporting closed paper trades to rolling trainset
+Wrote data/train_trades_closed.csv: 150 rows (added/updated 13)
+2026-03-26 20:14:19 | Pruning old run folders older than 45 days
+[main 9e1aa16] paper-trade: update signals/state/orders
+ 9 files changed, 78 insertions(+), 75 deletions(-)
+ create mode 100644 paper_trader_out/run/20260326/candidates_scored.csv
+ create mode 100644 paper_trader_out/run/20260326/orders_to_place.csv
+ create mode 100644 paper_trader_out/run/20260326/selected_trades.csv
+2026-03-26 20:14:21 | ========== DAILY WORKFLOW SUCCESS ==========
+2026-03-27 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is up to date with 'origin/main'.
+Already up to date.
+2026-03-27 20:00:05 | ========== DAILY WORKFLOW START ==========
+2026-03-27 20:00:05 | Refreshing Kite token
+OK: token saved -> /opt/kite/secrets/kite_access_token.json
+user_id=AHJ859 token_last4=ExNZ
+token_ok path=/opt/kite/secrets/kite_access_token.json user_id=AHJ859 generated_at=1774621902 token_last4=ExNZ
+2026-03-27 20:01:42 | Running DAILY OHLCV UPDATE stage
+[UNIVERSE] NSE EQ count=9078 ref=RELIANCE target_day=2026-03-27 retention_days=2600 hist_rps=2.25 workers=24
+[PROGRESS] 200/9078 rows=39 skipped=161 elapsed=88.5s eff_rps=2.26
+[PROGRESS] 400/9078 rows=55 skipped=345 elapsed=177.4s eff_rps=2.25
+[PROGRESS] 600/9078 rows=59 skipped=541 elapsed=266.3s eff_rps=2.25
+[PROGRESS] 800/9078 rows=60 skipped=740 elapsed=355.3s eff_rps=2.25
+[PROGRESS] 1000/9078 rows=60 skipped=940 elapsed=444.2s eff_rps=2.25
+[PROGRESS] 1200/9078 rows=64 skipped=1136 elapsed=533.1s eff_rps=2.25
+[PROGRESS] 1400/9078 rows=68 skipped=1332 elapsed=622.0s eff_rps=2.25
+[PROGRESS] 1600/9078 rows=73 skipped=1527 elapsed=710.9s eff_rps=2.25
+[PROGRESS] 1800/9078 rows=74 skipped=1726 elapsed=799.9s eff_rps=2.25
+[PROGRESS] 2000/9078 rows=77 skipped=1923 elapsed=888.8s eff_rps=2.25
+[PROGRESS] 2200/9078 rows=79 skipped=2121 elapsed=977.7s eff_rps=2.25
+[PROGRESS] 2400/9078 rows=81 skipped=2319 elapsed=1066.6s eff_rps=2.25
+[PROGRESS] 2600/9078 rows=84 skipped=2516 elapsed=1155.5s eff_rps=2.25
+[PROGRESS] 2800/9078 rows=89 skipped=2711 elapsed=1244.5s eff_rps=2.25
+[PROGRESS] 3000/9078 rows=96 skipped=2904 elapsed=1333.4s eff_rps=2.25
+[PROGRESS] 3200/9078 rows=99 skipped=3101 elapsed=1422.3s eff_rps=2.25
+[PROGRESS] 3400/9078 rows=100 skipped=3300 elapsed=1511.2s eff_rps=2.25
+[PROGRESS] 3600/9078 rows=102 skipped=3498 elapsed=1600.1s eff_rps=2.25
+[PROGRESS] 3800/9078 rows=106 skipped=3694 elapsed=1689.1s eff_rps=2.25
+[PROGRESS] 4000/9078 rows=107 skipped=3893 elapsed=1778.0s eff_rps=2.25
+[PROGRESS] 4200/9078 rows=110 skipped=4090 elapsed=1866.9s eff_rps=2.25
+[PROGRESS] 4400/9078 rows=114 skipped=4286 elapsed=1955.8s eff_rps=2.25
+[PROGRESS] 4600/9078 rows=116 skipped=4484 elapsed=2044.7s eff_rps=2.25
+[PROGRESS] 4800/9078 rows=117 skipped=4683 elapsed=2133.7s eff_rps=2.25
+[PROGRESS] 5000/9078 rows=127 skipped=4873 elapsed=2222.6s eff_rps=2.25
+[PROGRESS] 5200/9078 rows=152 skipped=5048 elapsed=2311.5s eff_rps=2.25
+[PROGRESS] 5400/9078 rows=195 skipped=5205 elapsed=2400.4s eff_rps=2.25
+[PROGRESS] 5600/9078 rows=231 skipped=5369 elapsed=2489.3s eff_rps=2.25
+[PROGRESS] 5800/9078 rows=315 skipped=5485 elapsed=2578.3s eff_rps=2.25
+[PROGRESS] 6000/9078 rows=500 skipped=5500 elapsed=2667.2s eff_rps=2.25
+[PROGRESS] 6200/9078 rows=689 skipped=5511 elapsed=2756.1s eff_rps=2.25
+[PROGRESS] 6400/9078 rows=875 skipped=5525 elapsed=2845.0s eff_rps=2.25
+[PROGRESS] 6600/9078 rows=1071 skipped=5529 elapsed=2933.9s eff_rps=2.25
+[PROGRESS] 6800/9078 rows=1258 skipped=5542 elapsed=3022.9s eff_rps=2.25
+[PROGRESS] 7000/9078 rows=1435 skipped=5565 elapsed=3111.8s eff_rps=2.25
+[PROGRESS] 7200/9078 rows=1625 skipped=5575 elapsed=3200.7s eff_rps=2.25
+[PROGRESS] 7400/9078 rows=1821 skipped=5579 elapsed=3289.6s eff_rps=2.25
+[PROGRESS] 7600/9078 rows=2010 skipped=5590 elapsed=3378.6s eff_rps=2.25
+[PROGRESS] 7800/9078 rows=2201 skipped=5599 elapsed=3467.5s eff_rps=2.25
+[PROGRESS] 8000/9078 rows=2387 skipped=5613 elapsed=3556.4s eff_rps=2.25
+[PROGRESS] 8200/9078 rows=2581 skipped=5619 elapsed=3645.3s eff_rps=2.25
+[PROGRESS] 8400/9078 rows=2754 skipped=5646 elapsed=3734.2s eff_rps=2.25
+[PROGRESS] 8600/9078 rows=2944 skipped=5656 elapsed=3823.1s eff_rps=2.25
+[PROGRESS] 8800/9078 rows=3139 skipped=5661 elapsed=3912.1s eff_rps=2.25
+[PROGRESS] 9000/9078 rows=3332 skipped=5668 elapsed=4001.0s eff_rps=2.25
+[PROGRESS] 9078/9078 rows=3408 skipped=5670 elapsed=4035.7s eff_rps=2.25
+[WRITE] /opt/rsidiv/data/ohlcv_daily/ohlcv_2026-03-27.csv.gz rows=3408 skipped=5670
+[PRUNE] kept=1831 removed=1
+2026-03-27 21:08:59 | Building ohlcv_master.csv.gz
+[BUILD] files=60/1823 rows=97,349 last=2019-05-24
+[BUILD] files=120/1823 rows=194,910 last=2019-08-21
+[BUILD] files=180/1823 rows=293,807 last=2019-11-21
+[BUILD] files=240/1823 rows=387,118 last=2020-02-08
+[BUILD] files=300/1823 rows=452,922 last=2020-04-08
+[BUILD] files=360/1823 rows=516,610 last=2020-06-07
+[BUILD] files=420/1823 rows=590,887 last=2020-08-06
+[BUILD] files=480/1823 rows=689,775 last=2020-10-28
+[BUILD] files=540/1823 rows=794,531 last=2021-01-22
+[BUILD] files=600/1823 rows=901,479 last=2021-04-26
+[BUILD] files=660/1823 rows=1,011,034 last=2021-07-20
+[BUILD] files=720/1823 rows=1,123,783 last=2021-10-18
+[BUILD] files=780/1823 rows=1,240,149 last=2022-01-12
+[BUILD] files=840/1823 rows=1,358,081 last=2022-04-08
+[BUILD] files=900/1823 rows=1,480,413 last=2022-07-06
+[BUILD] files=960/1823 rows=1,605,218 last=2022-10-03
+[BUILD] files=1020/1823 rows=1,733,828 last=2022-12-29
+[BUILD] files=1080/1823 rows=1,865,769 last=2023-03-27
+[BUILD] files=1140/1823 rows=2,000,774 last=2023-06-26
+[BUILD] files=1200/1823 rows=2,140,141 last=2023-09-21
+[BUILD] files=1260/1823 rows=2,285,668 last=2023-12-19
+[BUILD] files=1320/1823 rows=2,436,833 last=2024-03-14
+[BUILD] files=1380/1823 rows=2,592,824 last=2024-06-13
+[BUILD] files=1440/1823 rows=2,754,325 last=2024-09-10
+[BUILD] files=1500/1823 rows=2,922,086 last=2024-12-06
+[BUILD] files=1560/1823 rows=3,093,695 last=2025-03-03
+[BUILD] files=1620/1823 rows=3,269,778 last=2025-06-03
+[BUILD] files=1680/1823 rows=3,450,414 last=2025-08-28
+[BUILD] files=1740/1823 rows=3,638,936 last=2025-11-25
+[BUILD] files=1800/1823 rows=3,833,890 last=2026-02-19
+[DONE] master=/opt/rsidiv/data/ohlcv_master.csv.gz files=1823 rows=3,909,691 range=2019-02-22..2026-03-27
+[META] /opt/rsidiv/data/ohlcv_master_meta.json
+[main 70b8526] Update OHLCV daily store + master
+ 4 files changed, 5 insertions(+), 5 deletions(-)
+ delete mode 100644 data/ohlcv_daily/ohlcv_2019-02-11.csv.gz
+ create mode 100644 data/ohlcv_daily/ohlcv_2026-03-27.csv.gz
+2026-03-27 21:10:04 | Downloading portfolio_run.zip from public release URL
+-rw-r--r-- 1 ubuntu ubuntu 131M Mar 27 21:10 /opt/rsidiv/data/portfolio_run.zip
+2026-03-27 21:10:10 | Building divergence signals
+[PROGRESS] 150/3166 processed, found=6
+[PROGRESS] 300/3166 processed, found=9
+[PROGRESS] 450/3166 processed, found=11
+[PROGRESS] 600/3166 processed, found=12
+[PROGRESS] 750/3166 processed, found=13
+[PROGRESS] 900/3166 processed, found=16
+[PROGRESS] 1200/3166 processed, found=26
+[PROGRESS] 1500/3166 processed, found=32
+[PROGRESS] 1650/3166 processed, found=35
+[PROGRESS] 1800/3166 processed, found=38
+[PROGRESS] 1950/3166 processed, found=41
+[PROGRESS] 2100/3166 processed, found=44
+[PROGRESS] 2250/3166 processed, found=47
+[PROGRESS] 2400/3166 processed, found=49
+[PROGRESS] 2550/3166 processed, found=55
+[PROGRESS] 2850/3166 processed, found=59
+[PROGRESS] 3000/3166 processed, found=63
+[PROGRESS] 3150/3166 processed, found=64
+==========================================================
+[DONE] target_day=2026-03-27 symbols_loaded=3166 signals=64
+[OUT] /opt/rsidiv/signals/divergences_2026-03-27.csv
+[OUT] /opt/rsidiv/signals/divergences_latest.csv
+==========================================================
+2026-03-27 21:10:36 | Running paper trader
+2026-03-27 21:10:39,337 | INFO | [RUN] run_date=2026-03-27 cutoff=2026-03-27
+2026-03-27 21:10:42,606 | INFO | [TRAINSET] rows=408,896 symbols=2,147 window=2021-03-27..2026-03-27
+2026-03-27 21:10:42,635 | INFO | [OHLCV][DATEFMT] fmt=%Y-%m-%d note=year_first_ymd
+2026-03-27 21:10:49,929 | INFO | [OHLCV] subset rows=2,928,848 symbols=2,128
+2026-03-27 21:10:59,421 | INFO | [OHLCV] after dedupe rows=2,928,745 dup=0
+2026-03-27 21:11:10,545 | INFO | [OHLCV][CACHE] saved series=paper_trader_out/caches/series_cache_ohlcv_master.csv.gz_gap7_m1774625976073448848_sz77171771_syb3eb5e3e541e.pkl seg=paper_trader_out/caches/seg_map_ohlcv_master.csv.gz_gap7_m1774625976073448848_sz77171771_syb3eb5e3e541e.pkl
+2026-03-27 21:11:13,555 | INFO | [GAP] forced_skips=8,872 kept_train=400,024
+2026-03-27 21:14:56,688 | INFO | [TRAIN 20260327][bull/long] ok_rate=0.995 n_train=20,000 n_val=8,000 PR=0.7201 ROC=0.7300
+2026-03-27 21:16:19,770 | INFO | [TRAIN 20260327][bull/short] ok_rate=0.997 n_train=20,000 n_val=7,292 PR=0.7817 ROC=0.7627
+2026-03-27 21:17:38,095 | INFO | [TRAIN 20260327][bear/long] ok_rate=0.996 n_train=20,000 n_val=8,000 PR=0.6951 ROC=0.7050
+2026-03-27 21:18:55,720 | INFO | [TRAIN 20260327][bear/short] ok_rate=0.997 n_train=20,000 n_val=8,000 PR=0.7022 ROC=0.7181
+2026-03-27 21:21:55,990 | INFO | [FILL] activated=0 pending_left=8 skip_reasons={'missing_entry_day_ohlc': 8}
+2026-03-27 21:21:56,084 | INFO | [EXITS] closed=12 equity_now=859,575.31
+2026-03-27 21:21:56,558 | INFO | [DONE] orders=7 pending_orders=15 open_positions=46 equity=859,575.31 elapsed=677.2s
+2026-03-27 21:22:02 | Exporting closed paper trades to rolling trainset
+Wrote data/train_trades_closed.csv: 162 rows (added/updated 25)
+2026-03-27 21:22:04 | Pruning old run folders older than 45 days
+[main de2d570] paper-trade: update signals/state/orders
+ 12 files changed, 229 insertions(+), 305 deletions(-)
+ create mode 100644 paper_trader_out/run/20260327/candidates_scored.csv
+ create mode 100644 paper_trader_out/run/20260327/orders_to_place.csv
+ create mode 100644 paper_trader_out/run/20260327/selected_trades.csv
+2026-03-27 21:22:06 | ========== DAILY WORKFLOW SUCCESS ==========
+2026-03-30 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is behind 'origin/main' by 9 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+Updating de2d570..fb9151c
+2026-03-31 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is behind 'origin/main' by 9 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+Updating de2d570..fb9151c
+2026-04-01 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is behind 'origin/main' by 9 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+Updating de2d570..fb9151c
+2026-04-02 20:00:00 | Syncing repo from origin/main
+D	paper_trader_out/run/20260305/candidates_scored.csv
+D	paper_trader_out/run/20260305/orders_to_place.csv
+D	paper_trader_out/run/20260305/selected_trades.csv
+D	paper_trader_out/run/20260306/candidates_scored.csv
+D	paper_trader_out/run/20260306/orders_to_place.csv
+D	paper_trader_out/run/20260306/selected_trades.csv
+D	paper_trader_out/run/20260309/candidates_scored.csv
+D	paper_trader_out/run/20260309/orders_to_place.csv
+D	paper_trader_out/run/20260309/selected_trades.csv
+D	paper_trader_out/run/20260310/candidates_scored.csv
+D	paper_trader_out/run/20260310/orders_to_place.csv
+D	paper_trader_out/run/20260310/selected_trades.csv
+D	paper_trader_out/run/20260311/candidates_scored.csv
+D	paper_trader_out/run/20260311/orders_to_place.csv
+D	paper_trader_out/run/20260311/selected_trades.csv
+D	paper_trader_out/run/20260312/candidates_scored.csv
+D	paper_trader_out/run/20260312/orders_to_place.csv
+D	paper_trader_out/run/20260312/selected_trades.csv
+D	paper_trader_out/run/20260313/candidates_scored.csv
+D	paper_trader_out/run/20260313/orders_to_place.csv
+D	paper_trader_out/run/20260313/selected_trades.csv
+D	paper_trader_out/run/20260316/candidates_scored.csv
+D	paper_trader_out/run/20260316/orders_to_place.csv
+D	paper_trader_out/run/20260316/selected_trades.csv
+D	paper_trader_out/run/20260318/candidates_scored.csv
+D	paper_trader_out/run/20260318/orders_to_place.csv
+D	paper_trader_out/run/20260318/selected_trades.csv
+D	paper_trader_out/run/20260319/candidates_scored.csv
+D	paper_trader_out/run/20260319/orders_to_place.csv
+D	paper_trader_out/run/20260319/selected_trades.csv
+D	paper_trader_out/run/20260320/candidates_scored.csv
+D	paper_trader_out/run/20260320/orders_to_place.csv
+D	paper_trader_out/run/20260320/selected_trades.csv
+M	paper_trader_out/state/last_daily_success.txt
+M	scripts/rsidiv_daily_retrain_paper_trader_option1.py
+Your branch is behind 'origin/main' by 11 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+Updating de2d570..1daa7f4

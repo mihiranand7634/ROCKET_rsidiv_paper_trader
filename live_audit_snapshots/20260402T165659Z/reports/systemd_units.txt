@@ -1,0 +1,63 @@
+===== /etc/systemd/system/rsidiv-daily.service =====
+
+[Unit]
+
+Description=RSIDIV daily Lightsail workflow
+
+After=network-online.target
+
+Wants=network-online.target
+
+
+
+[Service]
+
+Type=oneshot
+
+User=ubuntu
+
+Group=ubuntu
+
+WorkingDirectory=/opt/rsidiv
+
+Environment=HOME=/home/ubuntu
+
+ExecStart=/bin/bash /opt/rsidiv/bin/run_daily_lightsail_workflow.sh
+
+StandardOutput=append:/opt/rsidiv/logs/rsidiv-daily.log
+
+StandardError=append:/opt/rsidiv/logs/rsidiv-daily.err
+
+TimeoutStartSec=7200
+
+
+
+[Install]
+
+WantedBy=multi-user.target
+
+
+===== /etc/systemd/system/rsidiv-daily.timer =====
+
+[Unit]
+
+Description=Run RSIDIV daily workflow at 07:00 IST on weekdays
+
+
+
+[Timer]
+
+OnCalendar=Mon..Fri 20:00:00 Asia/Kolkata
+
+Persistent=true
+
+AccuracySec=1s
+
+Unit=rsidiv-daily.service
+
+
+
+[Install]
+
+WantedBy=timers.target
+

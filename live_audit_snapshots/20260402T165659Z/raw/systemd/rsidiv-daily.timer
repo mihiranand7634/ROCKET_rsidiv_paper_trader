@@ -1,0 +1,23 @@
+
+[Unit]
+
+Description=Run RSIDIV daily workflow at 07:00 IST on weekdays
+
+
+
+[Timer]
+
+OnCalendar=Mon..Fri 20:00:00 Asia/Kolkata
+
+Persistent=true
+
+AccuracySec=1s
+
+Unit=rsidiv-daily.service
+
+
+
+[Install]
+
+WantedBy=timers.target
+

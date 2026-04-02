@@ -1,0 +1,15 @@
+/opt/rsidiv/paper_trader_out/run/20260323/candidates_scored.csv
+/opt/rsidiv/paper_trader_out/run/20260323/orders_to_place.csv
+/opt/rsidiv/paper_trader_out/run/20260323/selected_trades.csv
+/opt/rsidiv/paper_trader_out/run/20260324/candidates_scored.csv
+/opt/rsidiv/paper_trader_out/run/20260324/orders_to_place.csv
+/opt/rsidiv/paper_trader_out/run/20260324/selected_trades.csv
+/opt/rsidiv/paper_trader_out/run/20260325/candidates_scored.csv
+/opt/rsidiv/paper_trader_out/run/20260325/orders_to_place.csv
+/opt/rsidiv/paper_trader_out/run/20260325/selected_trades.csv
+/opt/rsidiv/paper_trader_out/run/20260326/candidates_scored.csv
+/opt/rsidiv/paper_trader_out/run/20260326/orders_to_place.csv
+/opt/rsidiv/paper_trader_out/run/20260326/selected_trades.csv
+/opt/rsidiv/paper_trader_out/run/20260327/candidates_scored.csv
+/opt/rsidiv/paper_trader_out/run/20260327/orders_to_place.csv
+/opt/rsidiv/paper_trader_out/run/20260327/selected_trades.csv

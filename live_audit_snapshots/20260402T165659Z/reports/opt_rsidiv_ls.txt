@@ -1,0 +1,15 @@
+total 56
+drwxr-xr-x 13 ubuntu ubuntu 4096 Mar 12 06:00 .
+drwxr-xr-x  7 root   root   4096 Mar 31 16:23 ..
+-rw-rw-r--  1 ubuntu ubuntu  880 Mar 12 06:00 .env
+drwxrwxr-x  8 ubuntu ubuntu 4096 Apr  2 14:30 .git
+drwxrwxr-x  5 ubuntu ubuntu 4096 Mar  6 08:06 .venv
+drwxrwxr-x 12 ubuntu ubuntu 4096 Mar 22 18:56 _reset_backups
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar  6 14:15 bin
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 27 15:52 data
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 17 14:30 debug_login
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar  6 13:57 logs
+drwxrwxr-x  7 ubuntu ubuntu 4096 Mar 22 18:56 paper_trader_out
+drwxrwxr-x  3 ubuntu ubuntu 4096 Mar 22 18:56 scripts
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar  6 08:04 secrets
+drwxrwxr-x  2 ubuntu ubuntu 4096 Mar 27 15:40 signals

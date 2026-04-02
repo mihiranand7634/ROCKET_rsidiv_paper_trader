@@ -1,0 +1,9 @@
+timestamp_utc=2026-04-02T16:56:59Z
+whoami=ubuntu
+pwd=/opt/actions-runner/rsidiv/actions-runner/_work/ROCKET_rsidiv_paper_trader/ROCKET_rsidiv_paper_trader
+hostname=ip-172-26-15-173
+runner_name=ip-172-26-15-173
+runner_os=Linux
+runner_arch=X64
+labels=self-hosted,Linux,X64
+Linux ip-172-26-15-173 6.17.0-1007-aws #7~24.04.1-Ubuntu SMP Thu Jan 22 21:04:49 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux

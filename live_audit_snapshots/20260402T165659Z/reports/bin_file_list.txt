@@ -1,0 +1,3 @@
+/opt/rsidiv/bin/common.sh
+/opt/rsidiv/bin/run_backfill_once.sh
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh

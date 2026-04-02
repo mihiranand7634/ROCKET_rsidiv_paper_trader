@@ -1,0 +1,12 @@
+/opt/rsidiv/scripts/__pycache__/rsidiv_daily_retrain_paper_trader_option1.cpython-312.pyc
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py
+/opt/rsidiv/scripts/check_paper_trader_summary.py
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py
+/opt/rsidiv/scripts/get_kite_access_token_selenium.py
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug
+/opt/rsidiv/scripts/update_ohlcv_7y.py

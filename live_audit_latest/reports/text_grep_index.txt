@@ -1,0 +1,1192 @@
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:43:ATR_PERIOD = int(os.environ.get("ATR_PERIOD", "14"))
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:44:ATR_MULT = float(os.environ.get("ATR_MULT", "1.1"))
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:50:EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY = os.environ.get("EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY", "1").strip().lower() not in {"0","false","no"}
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:69:def atr_wilder(df: pd.DataFrame, period: int = 14) -> pd.Series:
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:87:def zigzag_atr_confirmed(df: pd.DataFrame,
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:88:                         atr_period: int = 14,
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:89:                         atr_mult: float = 2.0) -> Tuple[List[Tuple[int,int]], List[Tuple[int,int]]]:
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:107:    atr = pd.Series(tr).ewm(alpha=1/atr_period, adjust=False, min_periods=atr_period).mean().to_numpy()
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:119:        thr = atr_mult * (atr[i] if not np.isnan(atr[i]) else 1.0)
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:166:                             atr_period: int,
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:167:                             atr_mult: float,
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:179:    hi_sw, lo_sw = zigzag_atr_confirmed(df, atr_period=atr_period, atr_mult=atr_mult)
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:237:    target_day = _date_from_fname(files[-1])
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:257:    return all_df, target_day
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:266:    df_all, target_day = load_daily_store_last_n(OHLCV_DAILY_DIR, LOAD_LAST_FILES)
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:271:    # determine which symbols are eligible on target day
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:272:    df_td = df_all[df_all["date"] == target_day].copy()
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:274:        raise RuntimeError(f"No rows for target_day={target_day.date()} in loaded window.")
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:275:    if EXCLUDE_ZERO_VOLUME_ON_TARGET_DAY:
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:276:        elig_syms = set(df_td.loc[df_td["volume"].fillna(0).astype(float) > 0, "symbol"].unique().tolist())
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:304:        # Must end at target day to produce signals for that day
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:305:        if g["Date"].iloc[-1] != target_day:
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:316:        g["ATR14"] = atr_wilder(g.rename(columns={"Date":"date"}), ATR_PERIOD)  # uses High/Low/Close columns
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:321:        divs += detect_divergences_multi(g, LOOKBACK_BARS, SECOND_POINT_LOOKBACK, ATR_PERIOD, ATR_MULT, basis="close", use_recency_filter=use_recency)
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:322:        divs += detect_divergences_multi(g, LOOKBACK_BARS, SECOND_POINT_LOOKBACK, ATR_PERIOD, ATR_MULT, basis="extreme", use_recency_filter=use_recency)
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:329:        # Keep only divergences CONFIRMED on the target day
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:333:            if 0 <= d.confirm_idx < len(g) and g.at[d.confirm_idx, "Date"] == target_day:
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:373:            ATRMult=float(ATR_MULT),
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:374:            ATRPeriod=int(ATR_PERIOD),
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:385:    out_path = os.path.join(OUT_DIR, f"divergences_{target_day.date()}.csv")
+/opt/rsidiv/scripts/build_divergence_signals_from_daily_store.py:391:    print(f"[DONE] target_day={target_day.date()} symbols_loaded={n_syms} signals={len(out)}")
+grep: /opt/rsidiv/scripts/__pycache__/rsidiv_daily_retrain_paper_trader_option1.cpython-312.pyc: binary file matches
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:9:  (2) Loads divergence signals (divergences_latest.csv) and creates RR candidates (stop_atr, target_atr).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:12:  (5) Writes orders_to_place.csv and persists paper state (equity/open_positions/ledger/gate state).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:79:TRAIN_TRADES_CSV = r"data/train_trades_closed.csv"  # must include entry_date/exit_date/symbol/side/rmult/stop_atr/target_atr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:85:TRAIN_LOOKBACK_YEARS = 5           # trailing window by ENTRY_DATE (and EXIT_DATE must be <= cutoff)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:152:# stop ATR multiple: if STOP_ATR_LIST empty, uses ATRMult from the signal row.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:153:STOP_ATR_LIST = []  # e.g., [0.5, 0.75, 1.0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:154:# targets are computed as target = stop * rr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:158:ATR_PERIOD_DEFAULT = 14
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:159:MAX_HOLD_DAYS = 60              # time-exit if neither stop nor target hit within this many days
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:160:SAME_DAY_BOTH_HIT_POLICY = "stop_first"  # "stop_first" (conservative) or "target_first"
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:165:MAX_OPEN_POSITIONS = 180
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:193:for sub in ["caches", "features", "models", "run", "state"]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:362:    atr: Optional[np.ndarray] = None   # ATR values (float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:379:def dedupe_duplicate_dates_closest_close(df_sym):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:423:    px["seg_id"] = px["gap_days"].ge(SUSP_GAP_DAYS).groupby(px["symbol"]).cumsum().fillna(0).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:426:def compute_atr_from_ohlc(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int) -> np.ndarray:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:431:    # Wilder ATR (RMA)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:432:    atr = np.empty_like(tr, dtype=np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:433:    atr[0] = tr[0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:436:        atr[i] = (1 - alpha) * atr[i-1] + alpha * tr[i]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:437:    return atr.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:439:def load_ohlcv_subset_build_series(csv_path: str, symbols_needed: List[str], atr_period_default: int):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:442:    - series_map[sym] with dates64, seg_id, feats (ROCKET channels), and also OHLC + ATR arrays for paper exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:444:    Cached by (gap_days, n_symbols, csv basename).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:450:    cache_series = os.path.join(OUT_DIR, "caches", f"series_cache_{base_name}_gap{SUSP_GAP_DAYS}_n{len(symset)}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:451:    cache_seg = os.path.join(OUT_DIR, "caches", f"seg_map_{base_name}_gap{SUSP_GAP_DAYS}_n{len(symset)}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:453:    if os.path.exists(cache_series) and os.path.exists(cache_seg):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:454:        log.info(f"[OHLCV][CACHE] loading series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:455:        series_map = joblib.load(cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:456:        seg_map = pd.read_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:520:    deduped = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:524:            g = dedupe_duplicate_dates_closest_close(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:525:        deduped.append(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:526:    px2 = pd.concat(deduped, ignore_index=True).sort_values(["symbol", "date"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:527:    log.info(f"[OHLCV] after dedupe rows={len(px2):,} dup={int(px2.duplicated(['symbol','date']).sum()):,}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:544:        vol  = g["volume"].fillna(0.0).astype(np.float32).values
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:557:        # ATR for exits
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:558:        atr = compute_atr_from_ohlc(high, low, close, period=int(atr_period_default))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:561:        series_map[sym] = SymSeries(dates64=dates64, seg_id=seg_id, feats=feats, ohlc=ohlc, atr=atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:569:    seg_map.to_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:570:    joblib.dump(series_map, cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:571:    log.info(f"[OHLCV][CACHE] saved series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:669:                                entry_dates64: np.ndarray,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:692:        ent = entry_dates64[pos]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:750:    entry_dates64_all = df["entry_date"].values.astype("datetime64[D]")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:755:        ed = entry_dates64_all[start:end]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:950:PFKey = Tuple[str, str, str, float, float]  # (regime, side, side_mode, stop_r, tgt_r)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1154:    entry_date: str           # YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1159:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1162:    stop_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1163:    target_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1169:def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1170:    return (str(regime), str(side), str(side_mode), float(stop_r), float(tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1172:def _daily_capacity(equity: float, open_positions: List[OpenPos]) -> Tuple[int, float]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1173:    slots = max(0, int(MAX_OPEN_POSITIONS - len(open_positions)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1174:    open_risk = float(sum(p.risk_amt for p in open_positions))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1183:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1192:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1195:def load_open_positions() -> List[OpenPos]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1196:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1205:def save_open_positions(ops: List[OpenPos]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1206:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1213:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1225:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1296:    c_entry = pick(["EntryDate", "entry_date", "entry_dt"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1303:    c_stop  = pick(["StopATR", "stop_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1304:    c_tgt   = pick(["TargetATR", "target_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1310:    t["entry_date"] = s_day(t[c_entry], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1318:    t["stop_atr"] = pd.to_numeric(t[c_stop], errors="coerce") if c_stop else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1319:    t["target_atr"] = pd.to_numeric(t[c_tgt], errors="coerce") if c_tgt else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1321:    t = t.dropna(subset=["symbol", "entry_date", "exit_date", "rmult", "stop_atr", "target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1325:    t["stop_r"] = pd.to_numeric(t["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1326:    t["tgt_r"]  = pd.to_numeric(t["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1329:    assert_day_dt(t, "entry_date", name="[TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1332:    return t[["symbol","entry_date","exit_date","regime","side","side_mode","stop_atr","target_atr","stop_r","tgt_r","rmult","y_win"]].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1340:    assert_day_dt(t, "entry_date", name="[GAP/TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1344:    t = t.merge(seg_map.rename(columns={"date": "entry_date", "seg_id": "entry_seg"}),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1345:                on=["symbol", "entry_date"], how="left")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1410:    df["stop_atr_f"] = pd.to_numeric(df["stop_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1411:    df["target_atr_f"] = pd.to_numeric(df["target_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1412:    df["rr_ratio"] = (df["target_atr_f"] / np.maximum(1e-6, df["stop_atr_f"])).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1413:    df["rr_diff"]  = (df["target_atr_f"] - df["stop_atr_f"]).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1416:    base_cols = ["stop_atr_f","target_atr_f","rr_ratio","rr_diff"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1417:    cs_cols = add_cs_z_rank_inplace(df, cols=base_cols, group_col="entry_date")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1420:    F = df[static_cols].replace([np.inf,-np.inf], np.nan).fillna(0.0).astype(np.float32).values.astype(FEATURE_DTYPE)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1481:                dates = np.array(sorted(sub["entry_date"].unique()))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1492:                va = sub[sub["entry_date"].isin(tail)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1569:    r = pd.to_numeric(df["rmult"], errors="coerce").fillna(0.0).values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1571:    df["_r_target"] = r
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1579:            for (regime, side, stop_r, tgt_r), g in df.groupby(["regime","side","stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1586:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1590:                bucket_rr[(str(regime), str(side), float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1591:                stats.append(dict(run=run_tag, level="bucket", regime=regime, side=side, stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1594:            for (stop_r, tgt_r), g in df.groupby(["stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1601:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1605:                global_rr[(float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1606:                stats.append(dict(run=run_tag, level="global", stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1625:    stop_r = pd.to_numeric(df["stop_r"], errors="coerce").values.astype(float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1628:    keys = list(zip(regimes, sides, stop_r, tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1660:    req = ["Ticker","Kind","SignalDate","EntryDate","ATRMult","ATRPeriod"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1667:    d["entry_date"] = s_day(d["EntryDate"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1668:    d["atr_mult"] = pd.to_numeric(d["ATRMult"], errors="coerce").fillna(1.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1669:    d["atr_period"] = pd.to_numeric(d["ATRPeriod"], errors="coerce").fillna(ATR_PERIOD_DEFAULT).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1670:    d = d.dropna(subset=["symbol","signal_date","entry_date"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1672:    assert_day_dt(d, "entry_date", name="[DIV] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1690:    Expands RR combos: (stop_r, tgt_r).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1692:    d0 = div_df[div_df["entry_date"] == pd.Timestamp(run_date).normalize()].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1698:        stop_list = STOP_ATR_LIST[:] if STOP_ATR_LIST else [float(r.atr_mult)]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1699:        for stop_r in stop_list:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1701:                tgt_r = float(stop_r) * float(rr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1706:                    entry_date=pd.Timestamp(r.entry_date).normalize(),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1710:                    stop_atr=float(stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1711:                    target_atr=float(tgt_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1712:                    stop_r=float(round(stop_r, 6)),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1714:                    atr_period=int(r.atr_period),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1719:    assert_day_dt(out, "entry_date", name="[CAND] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1725:# Price helpers for paper trades (entry/stop/target + exit simulation)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1729:    Returns (open, high, low, close, atr) for the given day, or None if missing.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1736:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1737:    return float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1744:    stop_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1745:    target_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1746:    max_hold_days: int,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1750:    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1751:    using DAILY OHLC to decide stop/target/time exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1755:         - LONG: if Open <= stop => exit at Open; if Open >= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1756:         - SHORT: if Open >= stop => exit at Open; if Open <= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1757:      2) Intrabar (same-day) stop/target:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1758:         - If both stop and target touched in the same bar, use SAME_DAY_BOTH_HIT_POLICY
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1759:         - Exit price is the stop/target level (paper assumption)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1773:    last_day = min(cutoff_day, entry_day + pd.Timedelta(days=int(max_hold_days)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1785:            if o <= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1786:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1787:            if o >= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1788:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1790:            if o >= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1791:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1792:            if o <= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1793:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1795:        # 2) Intrabar stop/target
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1797:            hit_stop = (l <= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1798:            hit_tgt = (h >= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1800:            hit_stop = (h >= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1801:            hit_tgt = (l <= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1803:        if hit_stop and hit_tgt:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1804:            if SAME_DAY_BOTH_HIT_POLICY == "target_first":
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1805:                return d, "TARGET_AND_STOP_TARGET_FIRST", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1806:            return d, "TARGET_AND_STOP_STOP_FIRST", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1808:        if hit_stop:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1809:            return d, "STOP", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1811:            return d, "TARGET", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1822:def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1825:        risk_per_share = max(1e-12, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1828:        risk_per_share = max(1e-12, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1831:def qty_from_risk(risk_amt: float, entry_price: float, stop_price: float, side: str) -> int:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1834:        per_share = max(1e-9, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1836:        per_share = max(1e-9, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1883:    open_positions = load_open_positions()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1890:        baseline_extract = os.path.join(OUT_DIR, "caches", "_baseline_extracted")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1901:        need = ["symbol","entry_date","exit_date","side","rmult","stop_atr","target_atr"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1906:        tt["entry_date"] = s_day(tt["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1911:        tt["stop_atr"] = pd.to_numeric(tt["stop_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1912:        tt["target_atr"] = pd.to_numeric(tt["target_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1913:        tt["stop_r"] = pd.to_numeric(tt["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1914:        tt["tgt_r"]  = pd.to_numeric(tt["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1916:        train_trades = tt.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1922:        # We store from this script: symbol, entry_date, exit_date, side, stop_r, tgt_r, rmult_used
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1924:        if "rmult_used" in cols and "entry_date" in cols and "exit_date" in cols:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1928:            p["entry_date"] = s_day(p["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1933:            p["stop_atr"] = pd.to_numeric(p.get("stop_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1934:            p["target_atr"] = pd.to_numeric(p.get("tgt_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1935:            p["stop_r"] = pd.to_numeric(p["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1936:            p["tgt_r"]  = pd.to_numeric(p["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1939:            p = p.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1941:            key_cols = ["symbol","entry_date","exit_date","side","stop_r","tgt_r","rmult"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1947:    train_trades = train_trades[(train_trades["entry_date"] >= train_start) & (train_trades["entry_date"] <= train_end) & (train_trades["exit_date"] <= train_end)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1953:    symbols_needed = sorted(set(train_trades["symbol"].unique().tolist()) | set(div["symbol"].unique().tolist()) | set([p.symbol for p in open_positions]))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1954:    series_map, seg_map = load_ohlcv_subset_build_series(OHLCV_CSV, symbols_needed, atr_period_default=ATR_PERIOD_DEFAULT)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1984:    for p in open_positions:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1990:        last_mark = pd.Timestamp(p.last_mark_date).normalize() if p.last_mark_date else pd.Timestamp(p.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1991:        # evaluate exits from max(last_mark, entry_date) to cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:1992:        entry_day = pd.Timestamp(p.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2000:            entry_price=float(p.entry_price), stop_price=float(p.stop_price), target_price=float(p.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2001:            max_hold_days=int(MAX_HOLD_DAYS), cutoff_day=cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2009:        r_used = float(np.clip(rmult_from_exit(p.side, p.entry_price, p.stop_price, p.target_price, exit_price), -R_ABS_MAX_SANITY, R_ABS_MAX_SANITY))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2014:        gate.add_exit(_pf_key(p.regime, p.side, p.side_mode, p.stop_r, p.tgt_r), exit_day, r_used=r_used, risk_amt=float(p.risk_amt))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2022:            stop_r=float(p.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2024:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2040:    open_positions = still_open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2053:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2064:    # price + stops + targets
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2066:    stop_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2067:    target_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2068:    atr_vals = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2072:        px = get_ohlc_at(s, r.entry_date) if s is not None else None
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2074:            entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2076:        o,h,l,c,atr = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2077:        atr_use = atr if np.isfinite(atr) and atr > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2078:        if not np.isfinite(atr_use) or atr_use <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2079:            entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2082:        stop_dist = float(r.stop_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2083:        tgt_dist  = float(r.target_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2085:            stop_p = entry - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2088:            stop_p = entry + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2092:        stop_prices.append(stop_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2093:        target_prices.append(tgt_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2094:        atr_vals.append(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2098:    cand["stop_price"] = np.array(stop_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2099:    cand["target_price"] = np.array(target_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2100:    cand["atr_value"] = np.array(atr_vals, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2104:        log.info("[CAND] no candidates with price/ATR available.")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2105:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2146:    # one RR per signal: group by (symbol, entry_date, side) and pick best rr_choice_score
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2148:        cand = cand.sort_values(["rr_choice_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2155:            mults.append(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2163:    cap, open_risk_pct = _daily_capacity(equity, open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2165:        log.info(f"[SELECT] cap=0 open_positions={len(open_positions)} open_risk_pct={open_risk_pct:.3f}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2169:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2185:        gm = float(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r))) if WR_GATE_ENABLE else 1.0
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2188:        q = qty_from_risk(risk_amt, r.entry_price, r.stop_price, r.side)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2194:        open_positions.append(OpenPos(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2196:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2201:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2204:            stop_price=float(r.stop_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2205:            target_price=float(r.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2216:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2219:            stop_price=float(r.stop_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2220:            target_price=float(r.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2221:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2237:    save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak.20260306_161617:2248:    log.info(f"[DONE] orders={len(orders):,} open_positions={len(open_positions):,} equity={equity:,.2f} elapsed={time.time()-t0:.1f}s")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:9:  (2) Loads divergence signals (divergences_latest.csv) and creates RR candidates (stop_atr, target_atr).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:12:  (5) Writes orders_to_place.csv and persists paper state (pending_orders/open_positions/ledger/gate state).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:17:- Cache key includes OHLCV file fingerprint + exact symbol-set hash to avoid stale/colliding caches.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:82:TRAIN_TRADES_CSV = r"data/train_trades_closed.csv"  # must include entry_date/exit_date/symbol/side/rmult/stop_atr/target_atr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:88:TRAIN_LOOKBACK_YEARS = 5           # trailing window by ENTRY_DATE (and EXIT_DATE must be <= cutoff)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:155:# stop ATR multiple: if STOP_ATR_LIST empty, uses ATRMult from the signal row.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:156:STOP_ATR_LIST = []  # e.g., [0.5, 0.75, 1.0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:157:# targets are computed as target = stop * rr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:161:ATR_PERIOD_DEFAULT = 14
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:162:MAX_HOLD_DAYS = 60              # time-exit if neither stop nor target hit within this many days
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:163:SAME_DAY_BOTH_HIT_POLICY = "stop_first"  # "stop_first" (conservative) or "target_first"
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:168:MAX_OPEN_POSITIONS = 180
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:196:for sub in ["caches", "features", "models", "run", "state"]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:365:    atr: Optional[np.ndarray] = None   # ATR values (float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:382:def dedupe_duplicate_dates_closest_close(df_sym):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:426:    px["seg_id"] = px["gap_days"].ge(SUSP_GAP_DAYS).groupby(px["symbol"]).cumsum().fillna(0).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:429:def compute_atr_from_ohlc(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int) -> np.ndarray:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:434:    # Wilder ATR (RMA)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:435:    atr = np.empty_like(tr, dtype=np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:436:    atr[0] = tr[0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:439:        atr[i] = (1 - alpha) * atr[i-1] + alpha * tr[i]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:440:    return atr.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:442:def _series_cache_key(csv_path: str, symbols_needed: List[str]) -> str:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:449:def load_ohlcv_subset_build_series(csv_path: str, symbols_needed: List[str], atr_period_default: int):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:452:    - series_map[sym] with dates64, seg_id, feats (ROCKET channels), and also OHLC + ATR arrays for paper exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:455:    Cache key includes:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:459:    This prevents stale/colliding caches when:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:466:    cache_key = _series_cache_key(csv_path, symbols_needed)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:467:    cache_series = os.path.join(OUT_DIR, "caches", f"series_cache_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:468:    cache_seg = os.path.join(OUT_DIR, "caches", f"seg_map_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:470:    if os.path.exists(cache_series) and os.path.exists(cache_seg):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:471:        log.info(f"[OHLCV][CACHE] loading series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:472:        series_map = joblib.load(cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:473:        seg_map = pd.read_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:537:    deduped = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:541:            g = dedupe_duplicate_dates_closest_close(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:542:        deduped.append(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:543:    px2 = pd.concat(deduped, ignore_index=True).sort_values(["symbol", "date"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:544:    log.info(f"[OHLCV] after dedupe rows={len(px2):,} dup={int(px2.duplicated(['symbol','date']).sum()):,}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:561:        vol  = g["volume"].fillna(0.0).astype(np.float32).values
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:574:        # ATR for exits
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:575:        atr = compute_atr_from_ohlc(high, low, close, period=int(atr_period_default))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:578:        series_map[sym] = SymSeries(dates64=dates64, seg_id=seg_id, feats=feats, ohlc=ohlc, atr=atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:586:    seg_map.to_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:587:    joblib.dump(series_map, cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:588:    log.info(f"[OHLCV][CACHE] saved series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:686:                                entry_dates64: np.ndarray,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:709:        ent = entry_dates64[pos]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:767:    entry_dates64_all = df["entry_date"].values.astype("datetime64[D]")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:772:        ed = entry_dates64_all[start:end]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:967:PFKey = Tuple[str, str, str, float, float]  # (regime, side, side_mode, stop_r, tgt_r)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1171:    entry_date: str           # YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1176:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1179:    stop_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1180:    target_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1189:    entry_date: str           # intended fill date YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1194:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1200:    ref_atr_value: float      # ATR known on ref_date
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1206:def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1207:    return (str(regime), str(side), str(side_mode), float(stop_r), float(tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1209:def _daily_capacity(equity: float, open_positions: List[OpenPos], pending_orders: Optional[List[PendingOrder]] = None) -> Tuple[int, float]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1210:    pending_orders = pending_orders or []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1211:    slots = max(0, int(MAX_OPEN_POSITIONS - len(open_positions) - len(pending_orders)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1212:    open_risk = float(sum(p.risk_amt for p in open_positions)) + float(sum(p.risk_amt for p in pending_orders))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1221:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1230:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1233:def load_open_positions() -> List[OpenPos]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1234:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1248:def save_open_positions(ops: List[OpenPos]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1249:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1255:def load_pending_orders() -> List[PendingOrder]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1256:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1270:def save_pending_orders(orders: List[PendingOrder]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1271:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1278:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1290:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1299:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1303:        "pos_id","symbol","side","regime","side_mode","stop_r","tgt_r",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1304:        "entry_date","exit_date","exit_reason","entry_price","exit_price",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1376:    c_entry = pick(["EntryDate", "entry_date", "entry_dt"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1383:    c_stop  = pick(["StopATR", "stop_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1384:    c_tgt   = pick(["TargetATR", "target_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1390:    t["entry_date"] = s_day(t[c_entry], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1398:    t["stop_atr"] = pd.to_numeric(t[c_stop], errors="coerce") if c_stop else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1399:    t["target_atr"] = pd.to_numeric(t[c_tgt], errors="coerce") if c_tgt else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1401:    t = t.dropna(subset=["symbol", "entry_date", "exit_date", "rmult", "stop_atr", "target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1405:    t["stop_r"] = pd.to_numeric(t["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1406:    t["tgt_r"]  = pd.to_numeric(t["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1409:    assert_day_dt(t, "entry_date", name="[TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1412:    return t[["symbol","entry_date","exit_date","regime","side","side_mode","stop_atr","target_atr","stop_r","tgt_r","rmult","y_win"]].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1420:    assert_day_dt(t, "entry_date", name="[GAP/TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1424:    t = t.merge(seg_map.rename(columns={"date": "entry_date", "seg_id": "entry_seg"}),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1425:                on=["symbol", "entry_date"], how="left")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1490:    df["stop_atr_f"] = pd.to_numeric(df["stop_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1491:    df["target_atr_f"] = pd.to_numeric(df["target_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1492:    df["rr_ratio"] = (df["target_atr_f"] / np.maximum(1e-6, df["stop_atr_f"])).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1493:    df["rr_diff"]  = (df["target_atr_f"] - df["stop_atr_f"]).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1496:    base_cols = ["stop_atr_f","target_atr_f","rr_ratio","rr_diff"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1497:    cs_cols = add_cs_z_rank_inplace(df, cols=base_cols, group_col="entry_date")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1500:    F = df[static_cols].replace([np.inf,-np.inf], np.nan).fillna(0.0).astype(np.float32).values.astype(FEATURE_DTYPE)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1561:                dates = np.array(sorted(sub["entry_date"].unique()))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1572:                va = sub[sub["entry_date"].isin(tail)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1649:    r = pd.to_numeric(df["rmult"], errors="coerce").fillna(0.0).values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1651:    df["_r_target"] = r
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1659:            for (regime, side, stop_r, tgt_r), g in df.groupby(["regime","side","stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1666:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1670:                bucket_rr[(str(regime), str(side), float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1671:                stats.append(dict(run=run_tag, level="bucket", regime=regime, side=side, stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1674:            for (stop_r, tgt_r), g in df.groupby(["stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1681:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1685:                global_rr[(float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1686:                stats.append(dict(run=run_tag, level="global", stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1705:    stop_r = pd.to_numeric(df["stop_r"], errors="coerce").values.astype(float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1708:    keys = list(zip(regimes, sides, stop_r, tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1740:    req = ["Ticker","Kind","SignalDate","EntryDate","ATRMult","ATRPeriod"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1747:    d["entry_date"] = s_day(d["EntryDate"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1748:    d["atr_mult"] = pd.to_numeric(d["ATRMult"], errors="coerce").fillna(1.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1749:    d["atr_period"] = pd.to_numeric(d["ATRPeriod"], errors="coerce").fillna(ATR_PERIOD_DEFAULT).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1750:    d = d.dropna(subset=["symbol","signal_date","entry_date"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1752:    assert_day_dt(d, "entry_date", name="[DIV] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1775:    Expands RR combos: (stop_r, tgt_r).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1779:    d0 = div_df[div_df["entry_date"] == next_trade_day].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1785:        stop_list = STOP_ATR_LIST[:] if STOP_ATR_LIST else [float(r.atr_mult)]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1786:        for stop_r in stop_list:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1788:                tgt_r = float(stop_r) * float(rr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1793:                    entry_date=pd.Timestamp(r.entry_date).normalize(),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1797:                    stop_atr=float(stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1798:                    target_atr=float(tgt_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1799:                    stop_r=float(round(stop_r, 6)),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1801:                    atr_period=int(r.atr_period),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1806:    assert_day_dt(out, "entry_date", name="[CAND] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1812:# Price helpers for paper trades (entry/stop/target + exit simulation)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1816:    Returns (open, high, low, close, atr) for the given day, or None if missing.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1823:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1824:    return float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1834:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1836:    return actual_day, float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1862:    stop_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1863:    target_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1864:    max_hold_days: int,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1868:    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1869:    using DAILY OHLC to decide stop/target/time exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1873:         - LONG: if Open <= stop => exit at Open; if Open >= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1874:         - SHORT: if Open >= stop => exit at Open; if Open <= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1875:      2) Intrabar (same-day) stop/target:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1876:         - If both stop and target touched in the same bar, use SAME_DAY_BOTH_HIT_POLICY
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1877:         - Exit price is the stop/target level (paper assumption)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1891:    last_day = min(cutoff_day, entry_day + pd.Timedelta(days=int(max_hold_days)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1903:            if o <= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1904:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1905:            if o >= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1906:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1908:            if o >= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1909:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1910:            if o <= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1911:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1913:        # 2) Intrabar stop/target
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1915:            hit_stop = (l <= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1916:            hit_tgt = (h >= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1918:            hit_stop = (h >= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1919:            hit_tgt = (l <= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1921:        if hit_stop and hit_tgt:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1922:            if SAME_DAY_BOTH_HIT_POLICY == "target_first":
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1923:                return d, "TARGET_AND_STOP_TARGET_FIRST", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1924:            return d, "TARGET_AND_STOP_STOP_FIRST", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1926:        if hit_stop:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1927:            return d, "STOP", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1929:            return d, "TARGET", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1940:def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1943:        risk_per_share = max(1e-12, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1946:        risk_per_share = max(1e-12, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1949:def qty_from_risk(risk_amt: float, entry_price: float, stop_price: float, side: str) -> int:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1952:        per_share = max(1e-9, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:1954:        per_share = max(1e-9, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2002:    open_positions = load_open_positions()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2003:    pending_orders = load_pending_orders()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2010:        baseline_extract = os.path.join(OUT_DIR, "caches", "_baseline_extracted")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2021:        need = ["symbol","entry_date","exit_date","side","rmult","stop_atr","target_atr"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2026:        tt["entry_date"] = s_day(tt["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2031:        tt["stop_atr"] = pd.to_numeric(tt["stop_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2032:        tt["target_atr"] = pd.to_numeric(tt["target_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2033:        tt["stop_r"] = pd.to_numeric(tt["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2034:        tt["tgt_r"]  = pd.to_numeric(tt["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2036:        train_trades = tt.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2042:        # We store from this script: symbol, entry_date, exit_date, side, stop_r, tgt_r, rmult_used
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2044:        if "rmult_used" in cols and "entry_date" in cols and "exit_date" in cols:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2048:            p["entry_date"] = s_day(p["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2053:            p["stop_atr"] = pd.to_numeric(p.get("stop_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2054:            p["target_atr"] = pd.to_numeric(p.get("tgt_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2055:            p["stop_r"] = pd.to_numeric(p["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2056:            p["tgt_r"]  = pd.to_numeric(p["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2059:            p = p.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2061:            key_cols = ["symbol","entry_date","exit_date","side","stop_r","tgt_r","rmult"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2067:    train_trades = train_trades[(train_trades["entry_date"] >= train_start) & (train_trades["entry_date"] <= train_end) & (train_trades["exit_date"] <= train_end)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2073:    symbols_needed = sorted(set(train_trades["symbol"].unique().tolist()) | set(div["symbol"].unique().tolist()) | set([p.symbol for p in open_positions]) | set([p.symbol for p in pending_orders]))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2074:    series_map, seg_map = load_ohlcv_subset_build_series(OHLCV_CSV, symbols_needed, atr_period_default=ATR_PERIOD_DEFAULT)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2099:    # ---- Activate pending orders that should fill on or before run_date ----
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2102:    fill_skips = Counter()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2103:    for po in pending_orders:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2104:        entry_day = pd.Timestamp(po.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2107:            fill_skips["future_entry_day"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2116:                atr_today = np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2117:                fill_skips["used_daily_file_fallback"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2120:                fill_skips["missing_entry_day_ohlc"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2123:            o, h, l, c, atr_today = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2125:        atr_ref = float(po.ref_atr_value) if np.isfinite(po.ref_atr_value) and po.ref_atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2126:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2132:                fill_skips["missing_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2134:            _, _, _, _, _, atr_prev = prev
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2135:            atr_ref = float(atr_prev) if np.isfinite(atr_prev) and atr_prev > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2137:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2139:            fill_skips["invalid_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2143:        stop_dist = float(po.stop_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2144:        tgt_dist  = float(po.tgt_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2146:            stop_price = entry_price - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2147:            target_price = entry_price + tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2149:            stop_price = entry_price + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2150:            target_price = entry_price - tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2152:        open_positions.append(OpenPos(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2154:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2159:            stop_r=float(po.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2162:            stop_price=float(stop_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2163:            target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2170:            pos_id=int(po.pos_id), symbol=str(po.symbol), side=str(po.side), entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2171:            filled_entry_price=float(entry_price), stop_price=float(stop_price), target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2172:            stop_r=float(po.stop_r), tgt_r=float(po.tgt_r), risk_amt=float(po.risk_amt), gate_mult=float(po.gate_mult),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2176:    pending_orders = still_pending
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2177:    log.info(f"[FILL] activated={len(activated_rows):,} pending_left={len(pending_orders):,} skip_reasons={dict(fill_skips)}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2184:    for p in open_positions:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2190:        entry_day = pd.Timestamp(p.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2192:        # evaluate exits from max(last_mark, entry_date) to cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2200:            entry_price=float(p.entry_price), stop_price=float(p.stop_price), target_price=float(p.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2201:            max_hold_days=int(MAX_HOLD_DAYS), cutoff_day=cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2209:        r_used = float(np.clip(rmult_from_exit(p.side, p.entry_price, p.stop_price, p.target_price, exit_price), -R_ABS_MAX_SANITY, R_ABS_MAX_SANITY))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2214:        gate.add_exit(_pf_key(p.regime, p.side, p.side_mode, p.stop_r, p.tgt_r), exit_day, r_used=r_used, risk_amt=float(p.risk_amt))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2222:            stop_r=float(p.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2224:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2240:    open_positions = still_open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2253:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2254:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2265:    # reference price/ATR from latest available bar on or before intended entry day
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2268:    stop_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2269:    target_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2270:    atr_vals = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2274:        px = get_ohlc_on_or_before(s, r.entry_date) if s is not None else None
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2276:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2278:        ref_day, o, h, l, c, atr = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2279:        atr_use = atr if np.isfinite(atr) and atr > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2280:        if not np.isfinite(atr_use) or atr_use <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2281:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2283:        # proxy entry for scoring/ranking only; actual paper fill will happen later at entry-day open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2285:        stop_dist = float(r.stop_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2286:        tgt_dist  = float(r.target_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2288:            stop_p = entry - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2291:            stop_p = entry + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2296:        stop_prices.append(stop_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2297:        target_prices.append(tgt_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2298:        atr_vals.append(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2303:    cand["stop_price"] = np.array(stop_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2304:    cand["target_price"] = np.array(target_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2305:    cand["atr_value"] = np.array(atr_vals, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2309:        log.info("[CAND] no candidates with price/ATR available.")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2310:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2311:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2352:    # one RR per signal: group by (symbol, entry_date, side) and pick best rr_choice_score
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2354:        cand = cand.sort_values(["rr_choice_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2361:            mults.append(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2369:    cap, open_risk_pct = _daily_capacity(equity, open_positions, pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2371:        log.info(f"[SELECT] cap=0 open_positions={len(open_positions)} pending_orders={len(pending_orders)} open_risk_pct={open_risk_pct:.3f}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2375:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2376:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2389:    # create pending orders for next session; actual fills happen when that entry_date bar becomes available
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2392:        gm = float(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r))) if WR_GATE_ENABLE else 1.0
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2395:        atr_ref = float(r.atr_value) if np.isfinite(r.atr_value) and r.atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2396:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2400:        pending_orders.append(PendingOrder(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2402:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2407:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2413:            ref_atr_value=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2420:        stop_dist = float(r.stop_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2421:        tgt_dist = float(r.tgt_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2424:            stop_proxy = px_proxy - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2427:            stop_proxy = px_proxy + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2429:        q = qty_from_risk(risk_amt, px_proxy, stop_proxy, r.side)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2435:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2439:            stop_price_proxy=float(stop_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2440:            target_price_proxy=float(tgt_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2441:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2443:            atr_value_ref=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2458:    save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2459:    save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak:2470:    log.info(f"[DONE] orders={len(orders):,} pending_orders={len(pending_orders):,} open_positions={len(open_positions):,} equity={equity:,.2f} elapsed={time.time()-t0:.1f}s")
+/opt/rsidiv/scripts/get_kite_access_token_selenium.py:245:        save_debug(driver, "01_filled_user_pass")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:9:  (2) Loads divergence signals (divergences_latest.csv) and creates RR candidates (stop_atr, target_atr).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:12:  (5) Writes orders_to_place.csv and persists paper state (equity/open_positions/ledger/gate state).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:82:TRAIN_TRADES_CSV = r"data/train_trades_closed.csv"  # must include entry_date/exit_date/symbol/side/rmult/stop_atr/target_atr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:88:TRAIN_LOOKBACK_YEARS = 5           # trailing window by ENTRY_DATE (and EXIT_DATE must be <= cutoff)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:155:# stop ATR multiple: if STOP_ATR_LIST empty, uses ATRMult from the signal row.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:156:STOP_ATR_LIST = []  # e.g., [0.5, 0.75, 1.0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:157:# targets are computed as target = stop * rr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:161:ATR_PERIOD_DEFAULT = 14
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:162:MAX_HOLD_DAYS = 60              # time-exit if neither stop nor target hit within this many days
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:163:SAME_DAY_BOTH_HIT_POLICY = "stop_first"  # "stop_first" (conservative) or "target_first"
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:168:MAX_OPEN_POSITIONS = 180
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:196:for sub in ["caches", "features", "models", "run", "state"]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:365:    atr: Optional[np.ndarray] = None   # ATR values (float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:382:def dedupe_duplicate_dates_closest_close(df_sym):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:426:    px["seg_id"] = px["gap_days"].ge(SUSP_GAP_DAYS).groupby(px["symbol"]).cumsum().fillna(0).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:429:def compute_atr_from_ohlc(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int) -> np.ndarray:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:434:    # Wilder ATR (RMA)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:435:    atr = np.empty_like(tr, dtype=np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:436:    atr[0] = tr[0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:439:        atr[i] = (1 - alpha) * atr[i-1] + alpha * tr[i]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:440:    return atr.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:442:def _series_cache_key(csv_path: str, symbols_needed: List[str]) -> str:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:449:def load_ohlcv_subset_build_series(csv_path: str, symbols_needed: List[str], atr_period_default: int):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:452:    - series_map[sym] with dates64, seg_id, feats (ROCKET channels), and also OHLC + ATR arrays for paper exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:455:    Cache key includes OHLCV file fingerprint + exact symbol-set hash to avoid stale/colliding caches.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:460:    cache_key = _series_cache_key(csv_path, symbols_needed)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:461:    cache_series = os.path.join(OUT_DIR, "caches", f"series_cache_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:462:    cache_seg = os.path.join(OUT_DIR, "caches", f"seg_map_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:464:    if os.path.exists(cache_series) and os.path.exists(cache_seg):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:465:        log.info(f"[OHLCV][CACHE] loading series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:466:        series_map = joblib.load(cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:467:        seg_map = pd.read_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:531:    deduped = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:535:            g = dedupe_duplicate_dates_closest_close(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:536:        deduped.append(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:537:    px2 = pd.concat(deduped, ignore_index=True).sort_values(["symbol", "date"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:538:    log.info(f"[OHLCV] after dedupe rows={len(px2):,} dup={int(px2.duplicated(['symbol','date']).sum()):,}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:555:        vol  = g["volume"].fillna(0.0).astype(np.float32).values
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:568:        # ATR for exits
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:569:        atr = compute_atr_from_ohlc(high, low, close, period=int(atr_period_default))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:572:        series_map[sym] = SymSeries(dates64=dates64, seg_id=seg_id, feats=feats, ohlc=ohlc, atr=atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:580:    seg_map.to_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:581:    joblib.dump(series_map, cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:582:    log.info(f"[OHLCV][CACHE] saved series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:680:                                entry_dates64: np.ndarray,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:703:        ent = entry_dates64[pos]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:761:    entry_dates64_all = df["entry_date"].values.astype("datetime64[D]")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:766:        ed = entry_dates64_all[start:end]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:961:PFKey = Tuple[str, str, str, float, float]  # (regime, side, side_mode, stop_r, tgt_r)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1165:    entry_date: str           # YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1170:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1173:    stop_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1174:    target_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1183:    entry_date: str           # intended fill date YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1188:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1194:    ref_atr_value: float      # ATR known on ref_date
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1200:def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1201:    return (str(regime), str(side), str(side_mode), float(stop_r), float(tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1203:def _daily_capacity(equity: float, open_positions: List[OpenPos], pending_orders: Optional[List[PendingOrder]] = None) -> Tuple[int, float]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1204:    pending_orders = pending_orders or []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1205:    slots = max(0, int(MAX_OPEN_POSITIONS - len(open_positions) - len(pending_orders)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1206:    open_risk = float(sum(p.risk_amt for p in open_positions)) + float(sum(p.risk_amt for p in pending_orders))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1215:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1224:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1227:def load_open_positions() -> List[OpenPos]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1228:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1242:def save_open_positions(ops: List[OpenPos]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1243:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1249:def load_pending_orders() -> List[PendingOrder]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1250:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1264:def save_pending_orders(orders: List[PendingOrder]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1265:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1272:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1284:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1293:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1297:        "pos_id","symbol","side","regime","side_mode","stop_r","tgt_r",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1298:        "entry_date","exit_date","exit_reason","entry_price","exit_price",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1370:    c_entry = pick(["EntryDate", "entry_date", "entry_dt"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1377:    c_stop  = pick(["StopATR", "stop_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1378:    c_tgt   = pick(["TargetATR", "target_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1384:    t["entry_date"] = s_day(t[c_entry], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1392:    t["stop_atr"] = pd.to_numeric(t[c_stop], errors="coerce") if c_stop else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1393:    t["target_atr"] = pd.to_numeric(t[c_tgt], errors="coerce") if c_tgt else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1395:    t = t.dropna(subset=["symbol", "entry_date", "exit_date", "rmult", "stop_atr", "target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1399:    t["stop_r"] = pd.to_numeric(t["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1400:    t["tgt_r"]  = pd.to_numeric(t["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1403:    assert_day_dt(t, "entry_date", name="[TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1406:    return t[["symbol","entry_date","exit_date","regime","side","side_mode","stop_atr","target_atr","stop_r","tgt_r","rmult","y_win"]].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1414:    assert_day_dt(t, "entry_date", name="[GAP/TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1418:    t = t.merge(seg_map.rename(columns={"date": "entry_date", "seg_id": "entry_seg"}),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1419:                on=["symbol", "entry_date"], how="left")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1484:    df["stop_atr_f"] = pd.to_numeric(df["stop_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1485:    df["target_atr_f"] = pd.to_numeric(df["target_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1486:    df["rr_ratio"] = (df["target_atr_f"] / np.maximum(1e-6, df["stop_atr_f"])).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1487:    df["rr_diff"]  = (df["target_atr_f"] - df["stop_atr_f"]).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1490:    base_cols = ["stop_atr_f","target_atr_f","rr_ratio","rr_diff"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1491:    cs_cols = add_cs_z_rank_inplace(df, cols=base_cols, group_col="entry_date")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1494:    F = df[static_cols].replace([np.inf,-np.inf], np.nan).fillna(0.0).astype(np.float32).values.astype(FEATURE_DTYPE)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1555:                dates = np.array(sorted(sub["entry_date"].unique()))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1566:                va = sub[sub["entry_date"].isin(tail)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1643:    r = pd.to_numeric(df["rmult"], errors="coerce").fillna(0.0).values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1645:    df["_r_target"] = r
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1653:            for (regime, side, stop_r, tgt_r), g in df.groupby(["regime","side","stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1660:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1664:                bucket_rr[(str(regime), str(side), float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1665:                stats.append(dict(run=run_tag, level="bucket", regime=regime, side=side, stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1668:            for (stop_r, tgt_r), g in df.groupby(["stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1675:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1679:                global_rr[(float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1680:                stats.append(dict(run=run_tag, level="global", stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1699:    stop_r = pd.to_numeric(df["stop_r"], errors="coerce").values.astype(float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1702:    keys = list(zip(regimes, sides, stop_r, tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1734:    req = ["Ticker","Kind","SignalDate","EntryDate","ATRMult","ATRPeriod"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1741:    d["entry_date"] = s_day(d["EntryDate"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1742:    d["atr_mult"] = pd.to_numeric(d["ATRMult"], errors="coerce").fillna(1.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1743:    d["atr_period"] = pd.to_numeric(d["ATRPeriod"], errors="coerce").fillna(ATR_PERIOD_DEFAULT).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1744:    d = d.dropna(subset=["symbol","signal_date","entry_date"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1746:    assert_day_dt(d, "entry_date", name="[DIV] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1769:    Expands RR combos: (stop_r, tgt_r).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1773:    d0 = div_df[div_df["entry_date"] == next_trade_day].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1779:        stop_list = STOP_ATR_LIST[:] if STOP_ATR_LIST else [float(r.atr_mult)]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1780:        for stop_r in stop_list:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1782:                tgt_r = float(stop_r) * float(rr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1787:                    entry_date=pd.Timestamp(r.entry_date).normalize(),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1791:                    stop_atr=float(stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1792:                    target_atr=float(tgt_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1793:                    stop_r=float(round(stop_r, 6)),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1795:                    atr_period=int(r.atr_period),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1800:    assert_day_dt(out, "entry_date", name="[CAND] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1806:# Price helpers for paper trades (entry/stop/target + exit simulation)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1810:    Returns (open, high, low, close, atr) for the given day, or None if missing.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1817:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1818:    return float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1828:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1830:    return actual_day, float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1856:    stop_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1857:    target_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1858:    max_hold_days: int,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1862:    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1863:    using DAILY OHLC to decide stop/target/time exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1867:         - LONG: if Open <= stop => exit at Open; if Open >= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1868:         - SHORT: if Open >= stop => exit at Open; if Open <= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1869:      2) Intrabar (same-day) stop/target:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1870:         - If both stop and target touched in the same bar, use SAME_DAY_BOTH_HIT_POLICY
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1871:         - Exit price is the stop/target level (paper assumption)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1885:    true_time_day = entry_day + pd.Timedelta(days=int(max_hold_days))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1898:            if o <= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1899:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1900:            if o >= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1901:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1903:            if o >= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1904:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1905:            if o <= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1906:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1908:        # 2) Intrabar stop/target
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1910:            hit_stop = (l <= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1911:            hit_tgt = (h >= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1913:            hit_stop = (h >= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1914:            hit_tgt = (l <= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1916:        if hit_stop and hit_tgt:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1917:            if SAME_DAY_BOTH_HIT_POLICY == "target_first":
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1918:                return d, "TARGET_AND_STOP_TARGET_FIRST", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1919:            return d, "TARGET_AND_STOP_STOP_FIRST", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1921:        if hit_stop:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1922:            return d, "STOP", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1924:            return d, "TARGET", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1935:def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1938:        risk_per_share = max(1e-12, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1941:        risk_per_share = max(1e-12, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1944:def qty_from_risk(risk_amt: float, entry_price: float, stop_price: float, side: str) -> int:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1947:        per_share = max(1e-9, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1949:        per_share = max(1e-9, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1997:    open_positions = load_open_positions()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:1998:    pending_orders = load_pending_orders()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2005:        baseline_extract = os.path.join(OUT_DIR, "caches", "_baseline_extracted")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2016:        need = ["symbol","entry_date","exit_date","side","rmult","stop_atr","target_atr"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2021:        tt["entry_date"] = s_day(tt["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2026:        tt["stop_atr"] = pd.to_numeric(tt["stop_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2027:        tt["target_atr"] = pd.to_numeric(tt["target_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2028:        tt["stop_r"] = pd.to_numeric(tt["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2029:        tt["tgt_r"]  = pd.to_numeric(tt["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2031:        train_trades = tt.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2037:        # We store from this script: symbol, entry_date, exit_date, side, stop_r, tgt_r, rmult_used
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2039:        if "rmult_used" in cols and "entry_date" in cols and "exit_date" in cols:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2043:            p["entry_date"] = s_day(p["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2048:            p["stop_atr"] = pd.to_numeric(p.get("stop_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2049:            p["target_atr"] = pd.to_numeric(p.get("tgt_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2050:            p["stop_r"] = pd.to_numeric(p["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2051:            p["tgt_r"]  = pd.to_numeric(p["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2054:            p = p.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2056:            key_cols = ["symbol","entry_date","exit_date","side","stop_r","tgt_r","rmult"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2062:    train_trades = train_trades[(train_trades["entry_date"] >= train_start) & (train_trades["entry_date"] <= train_end) & (train_trades["exit_date"] <= train_end)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2068:    symbols_needed = sorted(set(train_trades["symbol"].unique().tolist()) | set(div["symbol"].unique().tolist()) | set([p.symbol for p in open_positions]) | set([p.symbol for p in pending_orders]))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2069:    series_map, seg_map = load_ohlcv_subset_build_series(OHLCV_CSV, symbols_needed, atr_period_default=ATR_PERIOD_DEFAULT)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2094:    # ---- Activate pending orders that should fill on or before run_date ----
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2097:    fill_skips = Counter()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2098:    for po in pending_orders:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2099:        entry_day = pd.Timestamp(po.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2102:            fill_skips["future_entry_day"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2110:                atr_today = np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2111:                fill_skips["used_daily_file_fallback"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2114:                fill_skips["missing_entry_day_ohlc"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2117:            o, h, l, c, atr_today = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2118:        atr_ref = float(po.ref_atr_value) if np.isfinite(po.ref_atr_value) and po.ref_atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2119:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2125:                fill_skips["missing_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2127:            _, _, _, _, _, atr_prev = prev
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2128:            atr_ref = float(atr_prev) if np.isfinite(atr_prev) and atr_prev > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2129:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2131:            fill_skips["invalid_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2134:        stop_dist = float(po.stop_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2135:        tgt_dist  = float(po.tgt_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2137:            stop_price = entry_price - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2138:            target_price = entry_price + tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2140:            stop_price = entry_price + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2141:            target_price = entry_price - tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2142:        open_positions.append(OpenPos(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2144:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2149:            stop_r=float(po.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2152:            stop_price=float(stop_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2153:            target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2160:            pos_id=int(po.pos_id), symbol=str(po.symbol), side=str(po.side), entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2161:            filled_entry_price=float(entry_price), stop_price=float(stop_price), target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2162:            stop_r=float(po.stop_r), tgt_r=float(po.tgt_r), risk_amt=float(po.risk_amt), gate_mult=float(po.gate_mult),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2166:    pending_orders = still_pending
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2167:    log.info(f"[FILL] activated={len(activated_rows):,} pending_left={len(pending_orders):,} skip_reasons={dict(fill_skips)}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2174:    for p in open_positions:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2180:        entry_day = pd.Timestamp(p.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2182:        # evaluate exits from max(last_mark, entry_date) to cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2190:            entry_price=float(p.entry_price), stop_price=float(p.stop_price), target_price=float(p.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2191:            max_hold_days=int(MAX_HOLD_DAYS), cutoff_day=cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2199:        r_used = float(np.clip(rmult_from_exit(p.side, p.entry_price, p.stop_price, p.target_price, exit_price), -R_ABS_MAX_SANITY, R_ABS_MAX_SANITY))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2204:        gate.add_exit(_pf_key(p.regime, p.side, p.side_mode, p.stop_r, p.tgt_r), exit_day, r_used=r_used, risk_amt=float(p.risk_amt))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2212:            stop_r=float(p.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2214:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2230:    open_positions = still_open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2243:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2244:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2255:    # reference price/ATR from latest available bar on or before intended entry day
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2258:    stop_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2259:    target_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2260:    atr_vals = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2264:        px = get_ohlc_on_or_before(s, r.entry_date) if s is not None else None
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2266:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2268:        ref_day, o, h, l, c, atr = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2269:        atr_use = atr if np.isfinite(atr) and atr > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2270:        if not np.isfinite(atr_use) or atr_use <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2271:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2273:        # proxy entry for scoring/ranking only; actual paper fill will happen later at entry-day open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2275:        stop_dist = float(r.stop_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2276:        tgt_dist  = float(r.target_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2278:            stop_p = entry - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2281:            stop_p = entry + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2286:        stop_prices.append(stop_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2287:        target_prices.append(tgt_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2288:        atr_vals.append(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2293:    cand["stop_price"] = np.array(stop_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2294:    cand["target_price"] = np.array(target_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2295:    cand["atr_value"] = np.array(atr_vals, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2299:        log.info("[CAND] no candidates with price/ATR available.")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2300:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2301:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2342:    # one RR per signal: group by (symbol, entry_date, side) and pick best rr_choice_score
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2344:        cand = cand.sort_values(["rr_choice_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2351:            mults.append(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2359:    cap, open_risk_pct = _daily_capacity(equity, open_positions, pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2361:        log.info(f"[SELECT] cap=0 open_positions={len(open_positions)} pending_orders={len(pending_orders)} open_risk_pct={open_risk_pct:.3f}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2365:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2366:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2379:    # create pending orders for next session; actual fills happen when that entry_date bar becomes available
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2382:        gm = float(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r))) if WR_GATE_ENABLE else 1.0
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2385:        atr_ref = float(r.atr_value) if np.isfinite(r.atr_value) and r.atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2386:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2390:        pending_orders.append(PendingOrder(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2392:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2397:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2403:            ref_atr_value=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2410:        stop_dist = float(r.stop_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2411:        tgt_dist = float(r.tgt_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2414:            stop_proxy = px_proxy - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2417:            stop_proxy = px_proxy + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2419:        q = qty_from_risk(risk_amt, px_proxy, stop_proxy, r.side)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2425:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2429:            stop_price_proxy=float(stop_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2430:            target_price_proxy=float(tgt_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2431:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2433:            atr_value_ref=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2448:    save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2449:    save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py:2460:    log.info(f"[DONE] orders={len(orders):,} pending_orders={len(pending_orders):,} open_positions={len(open_positions):,} equity={equity:,.2f} elapsed={time.time()-t0:.1f}s")
+/opt/rsidiv/scripts/update_ohlcv_7y.py:8:- Builds NSE EQ universe from kite.instruments("NSE").
+/opt/rsidiv/scripts/update_ohlcv_7y.py:265:    target_day = _latest_completed_trading_day(kite0, ref_token)
+/opt/rsidiv/scripts/update_ohlcv_7y.py:267:    out_file = os.path.join(OUT_DIR, f"ohlcv_{target_day.strftime('%Y-%m-%d')}.csv.gz")
+/opt/rsidiv/scripts/update_ohlcv_7y.py:274:    frm = datetime(target_day.year, target_day.month, target_day.day, 0, 0, 0)
+/opt/rsidiv/scripts/update_ohlcv_7y.py:275:    to = datetime(target_day.year, target_day.month, target_day.day, 23, 59, 59)
+/opt/rsidiv/scripts/update_ohlcv_7y.py:281:        f"[UNIVERSE] NSE EQ count={total} ref={ref_sym} target_day={target_day.isoformat()} "
+/opt/rsidiv/scripts/update_ohlcv_7y.py:335:        "target_day": target_day.isoformat(),
+/opt/rsidiv/scripts/update_ohlcv_7y.py:336:        "universe_count": total,
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:8:(one file per day; produced by backfill_ohlcv_1y.py and update_ohlcv_1y.py).
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:21:- It does not attempt to sort within a day or re-dedupe; the daily files are assumed
+/opt/rsidiv/scripts/build_ohlcv_master_from_daily.py:23:  per-symbol and applies dedupe rules where needed.
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:7:LEDGER_PATH = "paper_trader_out/state/trade_ledger.csv"
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:21:    req = ["pos_id","symbol","entry_date","exit_date","regime","side","side_mode","stop_r","tgt_r","rmult_used"]
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:27:    df["EntryDate"] = norm_day(df["entry_date"])
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:33:    df["StopATR"]   = pd.to_numeric(df["stop_r"], errors="coerce")
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:34:    df["TargetATR"] = pd.to_numeric(df["tgt_r"], errors="coerce")
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:38:    df = df.dropna(subset=["EntryDate","ExitDate","Symbol","Regime","Side","SideMode","StopATR","TargetATR","Rmult"]).copy()
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:40:    # unique id so appends are deduped safely
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:43:    out_new = df[["EntryDate","ExitDate","Symbol","Rmult","Regime","Side","SideMode","StopATR","TargetATR","__uid"]].copy()
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:57:                old["StopATR"].astype(str) + "|" +
+/opt/rsidiv/scripts/export_paper_closed_trades_to_trainset.py:58:                old["TargetATR"].astype(str)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:9:  (2) Loads divergence signals (divergences_latest.csv) and creates RR candidates (stop_atr, target_atr).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:12:  (5) Writes orders_to_place.csv and persists paper state (pending_orders/open_positions/ledger/gate state).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:17:- Cache key includes OHLCV file fingerprint + exact symbol-set hash to avoid stale/colliding caches.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:82:TRAIN_TRADES_CSV = r"data/train_trades_closed.csv"  # must include entry_date/exit_date/symbol/side/rmult/stop_atr/target_atr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:88:TRAIN_LOOKBACK_YEARS = 5           # trailing window by ENTRY_DATE (and EXIT_DATE must be <= cutoff)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:155:# stop ATR multiple: if STOP_ATR_LIST empty, uses ATRMult from the signal row.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:156:STOP_ATR_LIST = []  # e.g., [0.5, 0.75, 1.0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:157:# targets are computed as target = stop * rr
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:161:ATR_PERIOD_DEFAULT = 14
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:162:MAX_HOLD_DAYS = 60              # time-exit if neither stop nor target hit within this many days
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:163:SAME_DAY_BOTH_HIT_POLICY = "stop_first"  # "stop_first" (conservative) or "target_first"
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:168:MAX_OPEN_POSITIONS = 180
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:196:for sub in ["caches", "features", "models", "run", "state"]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:365:    atr: Optional[np.ndarray] = None   # ATR values (float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:382:def dedupe_duplicate_dates_closest_close(df_sym):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:426:    px["seg_id"] = px["gap_days"].ge(SUSP_GAP_DAYS).groupby(px["symbol"]).cumsum().fillna(0).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:429:def compute_atr_from_ohlc(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int) -> np.ndarray:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:434:    # Wilder ATR (RMA)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:435:    atr = np.empty_like(tr, dtype=np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:436:    atr[0] = tr[0]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:439:        atr[i] = (1 - alpha) * atr[i-1] + alpha * tr[i]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:440:    return atr.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:442:def _series_cache_key(csv_path: str, symbols_needed: List[str]) -> str:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:449:def load_ohlcv_subset_build_series(csv_path: str, symbols_needed: List[str], atr_period_default: int):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:452:    - series_map[sym] with dates64, seg_id, feats (ROCKET channels), and also OHLC + ATR arrays for paper exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:455:    Cache key includes:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:459:    This prevents stale/colliding caches when:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:466:    cache_key = _series_cache_key(csv_path, symbols_needed)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:467:    cache_series = os.path.join(OUT_DIR, "caches", f"series_cache_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:468:    cache_seg = os.path.join(OUT_DIR, "caches", f"seg_map_{cache_key}.pkl")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:470:    if os.path.exists(cache_series) and os.path.exists(cache_seg):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:471:        log.info(f"[OHLCV][CACHE] loading series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:472:        series_map = joblib.load(cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:473:        seg_map = pd.read_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:537:    deduped = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:541:            g = dedupe_duplicate_dates_closest_close(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:542:        deduped.append(g)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:543:    px2 = pd.concat(deduped, ignore_index=True).sort_values(["symbol", "date"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:544:    log.info(f"[OHLCV] after dedupe rows={len(px2):,} dup={int(px2.duplicated(['symbol','date']).sum()):,}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:561:        vol  = g["volume"].fillna(0.0).astype(np.float32).values
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:574:        # ATR for exits
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:575:        atr = compute_atr_from_ohlc(high, low, close, period=int(atr_period_default))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:578:        series_map[sym] = SymSeries(dates64=dates64, seg_id=seg_id, feats=feats, ohlc=ohlc, atr=atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:586:    seg_map.to_pickle(cache_seg)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:587:    joblib.dump(series_map, cache_series)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:588:    log.info(f"[OHLCV][CACHE] saved series={cache_series} seg={cache_seg}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:686:                                entry_dates64: np.ndarray,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:709:        ent = entry_dates64[pos]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:767:    entry_dates64_all = df["entry_date"].values.astype("datetime64[D]")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:772:        ed = entry_dates64_all[start:end]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:967:PFKey = Tuple[str, str, str, float, float]  # (regime, side, side_mode, stop_r, tgt_r)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1171:    entry_date: str           # YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1176:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1179:    stop_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1180:    target_price: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1189:    entry_date: str           # intended fill date YYYY-MM-DD
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1194:    stop_r: float
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1200:    ref_atr_value: float      # ATR known on ref_date
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1206:def _pf_key(regime: str, side: str, side_mode: str, stop_r: float, tgt_r: float) -> PFKey:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1207:    return (str(regime), str(side), str(side_mode), float(stop_r), float(tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1209:def _daily_capacity(equity: float, open_positions: List[OpenPos], pending_orders: Optional[List[PendingOrder]] = None) -> Tuple[int, float]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1210:    pending_orders = pending_orders or []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1211:    slots = max(0, int(MAX_OPEN_POSITIONS - len(open_positions) - len(pending_orders)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1212:    open_risk = float(sum(p.risk_amt for p in open_positions)) + float(sum(p.risk_amt for p in pending_orders))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1221:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1230:    state_path = os.path.join(OUT_DIR, "state", "state.json")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1233:def load_open_positions() -> List[OpenPos]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1234:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1248:def save_open_positions(ops: List[OpenPos]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1249:    fp = os.path.join(OUT_DIR, "state", "open_positions.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1255:def load_pending_orders() -> List[PendingOrder]:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1256:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1270:def save_pending_orders(orders: List[PendingOrder]):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1271:    fp = os.path.join(OUT_DIR, "state", "pending_orders.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1278:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1290:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1299:    fp = os.path.join(OUT_DIR, "state", "trade_ledger.csv")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1303:        "pos_id","symbol","side","regime","side_mode","stop_r","tgt_r",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1304:        "entry_date","exit_date","exit_reason","entry_price","exit_price",
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1376:    c_entry = pick(["EntryDate", "entry_date", "entry_dt"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1383:    c_stop  = pick(["StopATR", "stop_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1384:    c_tgt   = pick(["TargetATR", "target_atr"])
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1390:    t["entry_date"] = s_day(t[c_entry], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1398:    t["stop_atr"] = pd.to_numeric(t[c_stop], errors="coerce") if c_stop else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1399:    t["target_atr"] = pd.to_numeric(t[c_tgt], errors="coerce") if c_tgt else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1401:    t = t.dropna(subset=["symbol", "entry_date", "exit_date", "rmult", "stop_atr", "target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1405:    t["stop_r"] = pd.to_numeric(t["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1406:    t["tgt_r"]  = pd.to_numeric(t["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1409:    assert_day_dt(t, "entry_date", name="[TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1412:    return t[["symbol","entry_date","exit_date","regime","side","side_mode","stop_atr","target_atr","stop_r","tgt_r","rmult","y_win"]].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1420:    assert_day_dt(t, "entry_date", name="[GAP/TRADES] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1424:    t = t.merge(seg_map.rename(columns={"date": "entry_date", "seg_id": "entry_seg"}),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1425:                on=["symbol", "entry_date"], how="left")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1490:    df["stop_atr_f"] = pd.to_numeric(df["stop_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1491:    df["target_atr_f"] = pd.to_numeric(df["target_atr"], errors="coerce").fillna(0.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1492:    df["rr_ratio"] = (df["target_atr_f"] / np.maximum(1e-6, df["stop_atr_f"])).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1493:    df["rr_diff"]  = (df["target_atr_f"] - df["stop_atr_f"]).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1496:    base_cols = ["stop_atr_f","target_atr_f","rr_ratio","rr_diff"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1497:    cs_cols = add_cs_z_rank_inplace(df, cols=base_cols, group_col="entry_date")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1500:    F = df[static_cols].replace([np.inf,-np.inf], np.nan).fillna(0.0).astype(np.float32).values.astype(FEATURE_DTYPE)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1561:                dates = np.array(sorted(sub["entry_date"].unique()))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1572:                va = sub[sub["entry_date"].isin(tail)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1649:    r = pd.to_numeric(df["rmult"], errors="coerce").fillna(0.0).values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1651:    df["_r_target"] = r
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1659:            for (regime, side, stop_r, tgt_r), g in df.groupby(["regime","side","stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1666:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1670:                bucket_rr[(str(regime), str(side), float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1671:                stats.append(dict(run=run_tag, level="bucket", regime=regime, side=side, stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1674:            for (stop_r, tgt_r), g in df.groupby(["stop_r","tgt_r"], sort=False):
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1681:                y = g2["_r_target"].values.astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1685:                global_rr[(float(stop_r), float(tgt_r))] = pack
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1686:                stats.append(dict(run=run_tag, level="global", stop_r=float(stop_r), tgt_r=float(tgt_r), n_train=int(len(g2))))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1705:    stop_r = pd.to_numeric(df["stop_r"], errors="coerce").values.astype(float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1708:    keys = list(zip(regimes, sides, stop_r, tgt_r))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1740:    req = ["Ticker","Kind","SignalDate","EntryDate","ATRMult","ATRPeriod"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1747:    d["entry_date"] = s_day(d["EntryDate"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1748:    d["atr_mult"] = pd.to_numeric(d["ATRMult"], errors="coerce").fillna(1.0).astype(np.float32)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1749:    d["atr_period"] = pd.to_numeric(d["ATRPeriod"], errors="coerce").fillna(ATR_PERIOD_DEFAULT).astype(int)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1750:    d = d.dropna(subset=["symbol","signal_date","entry_date"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1752:    assert_day_dt(d, "entry_date", name="[DIV] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1775:    Expands RR combos: (stop_r, tgt_r).
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1779:    d0 = div_df[div_df["entry_date"] == next_trade_day].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1785:        stop_list = STOP_ATR_LIST[:] if STOP_ATR_LIST else [float(r.atr_mult)]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1786:        for stop_r in stop_list:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1788:                tgt_r = float(stop_r) * float(rr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1793:                    entry_date=pd.Timestamp(r.entry_date).normalize(),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1797:                    stop_atr=float(stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1798:                    target_atr=float(tgt_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1799:                    stop_r=float(round(stop_r, 6)),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1801:                    atr_period=int(r.atr_period),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1806:    assert_day_dt(out, "entry_date", name="[CAND] ")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1812:# Price helpers for paper trades (entry/stop/target + exit simulation)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1816:    Returns (open, high, low, close, atr) for the given day, or None if missing.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1823:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1824:    return float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1834:    atr = series.atr[i] if series.atr is not None else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1836:    return actual_day, float(o), float(h), float(l), float(c), float(atr)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1862:    stop_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1863:    target_price: float,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1864:    max_hold_days: int,
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1868:    Walk forward from entry_day to min(entry_day+max_hold_days, cutoff_day) (calendar days),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1869:    using DAILY OHLC to decide stop/target/time exits.
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1873:         - LONG: if Open <= stop => exit at Open; if Open >= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1874:         - SHORT: if Open >= stop => exit at Open; if Open <= target => exit at Open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1875:      2) Intrabar (same-day) stop/target:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1876:         - If both stop and target touched in the same bar, use SAME_DAY_BOTH_HIT_POLICY
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1877:         - Exit price is the stop/target level (paper assumption)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1891:    last_day = min(cutoff_day, entry_day + pd.Timedelta(days=int(max_hold_days)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1903:            if o <= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1904:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1905:            if o >= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1906:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1908:            if o >= stop_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1909:                return d, "OPEN_STOP", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1910:            if o <= target_price:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1911:                return d, "OPEN_TARGET", float(o)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1913:        # 2) Intrabar stop/target
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1915:            hit_stop = (l <= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1916:            hit_tgt = (h >= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1918:            hit_stop = (h >= stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1919:            hit_tgt = (l <= target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1921:        if hit_stop and hit_tgt:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1922:            if SAME_DAY_BOTH_HIT_POLICY == "target_first":
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1923:                return d, "TARGET_AND_STOP_TARGET_FIRST", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1924:            return d, "TARGET_AND_STOP_STOP_FIRST", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1926:        if hit_stop:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1927:            return d, "STOP", float(stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1929:            return d, "TARGET", float(target_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1940:def rmult_from_exit(side: str, entry_price: float, stop_price: float, target_price: float, exit_price: float) -> float:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1943:        risk_per_share = max(1e-12, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1946:        risk_per_share = max(1e-12, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1949:def qty_from_risk(risk_amt: float, entry_price: float, stop_price: float, side: str) -> int:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1952:        per_share = max(1e-9, entry_price - stop_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:1954:        per_share = max(1e-9, stop_price - entry_price)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2002:    open_positions = load_open_positions()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2003:    pending_orders = load_pending_orders()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2010:        baseline_extract = os.path.join(OUT_DIR, "caches", "_baseline_extracted")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2021:        need = ["symbol","entry_date","exit_date","side","rmult","stop_atr","target_atr"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2026:        tt["entry_date"] = s_day(tt["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2031:        tt["stop_atr"] = pd.to_numeric(tt["stop_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2032:        tt["target_atr"] = pd.to_numeric(tt["target_atr"], errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2033:        tt["stop_r"] = pd.to_numeric(tt["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2034:        tt["tgt_r"]  = pd.to_numeric(tt["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2036:        train_trades = tt.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2042:        # We store from this script: symbol, entry_date, exit_date, side, stop_r, tgt_r, rmult_used
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2044:        if "rmult_used" in cols and "entry_date" in cols and "exit_date" in cols:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2048:            p["entry_date"] = s_day(p["entry_date"], fmt=None, default_dayfirst=False)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2053:            p["stop_atr"] = pd.to_numeric(p.get("stop_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2054:            p["target_atr"] = pd.to_numeric(p.get("tgt_r", np.nan), errors="coerce")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2055:            p["stop_r"] = pd.to_numeric(p["stop_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2056:            p["tgt_r"]  = pd.to_numeric(p["target_atr"], errors="coerce").round(6)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2059:            p = p.dropna(subset=["symbol","entry_date","exit_date","rmult","stop_atr","target_atr"]).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2061:            key_cols = ["symbol","entry_date","exit_date","side","stop_r","tgt_r","rmult"]
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2067:    train_trades = train_trades[(train_trades["entry_date"] >= train_start) & (train_trades["entry_date"] <= train_end) & (train_trades["exit_date"] <= train_end)].copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2073:    symbols_needed = sorted(set(train_trades["symbol"].unique().tolist()) | set(div["symbol"].unique().tolist()) | set([p.symbol for p in open_positions]) | set([p.symbol for p in pending_orders]))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2074:    series_map, seg_map = load_ohlcv_subset_build_series(OHLCV_CSV, symbols_needed, atr_period_default=ATR_PERIOD_DEFAULT)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2099:    # ---- Activate pending orders that should fill on or before run_date ----
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2102:    fill_skips = Counter()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2103:    for po in pending_orders:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2104:        entry_day = pd.Timestamp(po.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2107:            fill_skips["future_entry_day"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2116:                atr_today = np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2117:                fill_skips["used_daily_file_fallback"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2120:                fill_skips["missing_entry_day_ohlc"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2123:            o, h, l, c, atr_today = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2125:        atr_ref = float(po.ref_atr_value) if np.isfinite(po.ref_atr_value) and po.ref_atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2126:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2132:                fill_skips["missing_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2134:            _, _, _, _, _, atr_prev = prev
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2135:            atr_ref = float(atr_prev) if np.isfinite(atr_prev) and atr_prev > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2137:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2139:            fill_skips["invalid_atr_reference"] += 1
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2143:        stop_dist = float(po.stop_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2144:        tgt_dist  = float(po.tgt_r) * atr_ref
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2146:            stop_price = entry_price - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2147:            target_price = entry_price + tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2149:            stop_price = entry_price + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2150:            target_price = entry_price - tgt_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2152:        open_positions.append(OpenPos(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2154:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2159:            stop_r=float(po.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2162:            stop_price=float(stop_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2163:            target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2170:            pos_id=int(po.pos_id), symbol=str(po.symbol), side=str(po.side), entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2171:            filled_entry_price=float(entry_price), stop_price=float(stop_price), target_price=float(target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2172:            stop_r=float(po.stop_r), tgt_r=float(po.tgt_r), risk_amt=float(po.risk_amt), gate_mult=float(po.gate_mult),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2176:    pending_orders = still_pending
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2177:    log.info(f"[FILL] activated={len(activated_rows):,} pending_left={len(pending_orders):,} skip_reasons={dict(fill_skips)}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2184:    for p in open_positions:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2190:        entry_day = pd.Timestamp(p.entry_date).normalize()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2192:        # evaluate exits from max(last_mark, entry_date) to cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2200:            entry_price=float(p.entry_price), stop_price=float(p.stop_price), target_price=float(p.target_price),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2201:            max_hold_days=int(MAX_HOLD_DAYS), cutoff_day=cutoff
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2209:        r_used = float(np.clip(rmult_from_exit(p.side, p.entry_price, p.stop_price, p.target_price, exit_price), -R_ABS_MAX_SANITY, R_ABS_MAX_SANITY))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2214:        gate.add_exit(_pf_key(p.regime, p.side, p.side_mode, p.stop_r, p.tgt_r), exit_day, r_used=r_used, risk_amt=float(p.risk_amt))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2222:            stop_r=float(p.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2224:            entry_date=str(entry_day.date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2240:    open_positions = still_open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2253:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2254:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2265:    # reference price/ATR from latest available bar on or before intended entry day
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2268:    stop_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2269:    target_prices = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2270:    atr_vals = []
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2274:        px = get_ohlc_on_or_before(s, r.entry_date) if s is not None else None
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2276:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2278:        ref_day, o, h, l, c, atr = px
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2279:        atr_use = atr if np.isfinite(atr) and atr > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2280:        if not np.isfinite(atr_use) or atr_use <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2281:            ref_dates.append(pd.NaT); entry_prices.append(np.nan); stop_prices.append(np.nan); target_prices.append(np.nan); atr_vals.append(np.nan); ok_px.append(0)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2283:        # proxy entry for scoring/ranking only; actual paper fill will happen later at entry-day open
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2285:        stop_dist = float(r.stop_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2286:        tgt_dist  = float(r.target_atr) * float(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2288:            stop_p = entry - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2291:            stop_p = entry + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2296:        stop_prices.append(stop_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2297:        target_prices.append(tgt_p)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2298:        atr_vals.append(atr_use)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2303:    cand["stop_price"] = np.array(stop_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2304:    cand["target_price"] = np.array(target_prices, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2305:    cand["atr_value"] = np.array(atr_vals, dtype=float)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2309:        log.info("[CAND] no candidates with price/ATR available.")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2310:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2311:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2352:    # one RR per signal: group by (symbol, entry_date, side) and pick best rr_choice_score
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2354:        cand = cand.sort_values(["rr_choice_score","expr_score"], ascending=False).groupby(["symbol","entry_date","side"], sort=False).head(1).copy()
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2361:            mults.append(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r)))
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2369:    cap, open_risk_pct = _daily_capacity(equity, open_positions, pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2371:        log.info(f"[SELECT] cap=0 open_positions={len(open_positions)} pending_orders={len(pending_orders)} open_risk_pct={open_risk_pct:.3f}")
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2375:        save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2376:        save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2389:    # create pending orders for next session; actual fills happen when that entry_date bar becomes available
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2392:        gm = float(gate.get_mult(_pf_key(r.regime, r.side, r.side_mode, r.stop_r, r.tgt_r))) if WR_GATE_ENABLE else 1.0
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2395:        atr_ref = float(r.atr_value) if np.isfinite(r.atr_value) and r.atr_value > 0 else np.nan
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2396:        if not np.isfinite(atr_ref) or atr_ref <= 0:
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2400:        pending_orders.append(PendingOrder(
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2402:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2407:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2413:            ref_atr_value=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2420:        stop_dist = float(r.stop_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2421:        tgt_dist = float(r.tgt_r) * float(atr_ref)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2424:            stop_proxy = px_proxy - stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2427:            stop_proxy = px_proxy + stop_dist
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2429:        q = qty_from_risk(risk_amt, px_proxy, stop_proxy, r.side)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2435:            entry_date=str(pd.Timestamp(r.entry_date).normalize().date()),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2439:            stop_price_proxy=float(stop_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2440:            target_price_proxy=float(tgt_proxy),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2441:            stop_r=float(r.stop_r),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2443:            atr_value_ref=float(atr_ref),
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2458:    save_open_positions(open_positions)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2459:    save_pending_orders(pending_orders)
+/opt/rsidiv/scripts/rsidiv_daily_retrain_paper_trader_option1.py.bak_timebug:2470:    log.info(f"[DONE] orders={len(orders):,} pending_orders={len(pending_orders):,} open_positions={len(open_positions):,} equity={equity:,.2f} elapsed={time.time()-t0:.1f}s")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:346:    pending_path = STATE_DIR / "pending_orders.csv"
+/opt/rsidiv/scripts/check_paper_trader_summary.py:348:    open_path = STATE_DIR / "open_positions.csv"
+/opt/rsidiv/scripts/check_paper_trader_summary.py:350:    ledger_path = STATE_DIR / "trade_ledger.csv"
+/opt/rsidiv/scripts/check_paper_trader_summary.py:352:    state_json_path = STATE_DIR / "state.json"
+/opt/rsidiv/scripts/check_paper_trader_summary.py:376:    print(f"pending_orders_rows: {len(pending_df)}")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:378:    print(f"open_positions_rows: {len(open_df)}")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:380:    print(f"trade_ledger_rows: {len(ledger_df)}")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:384:    print("\n=== STATE.JSON ===")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:434:        for col in ["entry_date", "side", "regime", "side_mode", "symbol"]:
+/opt/rsidiv/scripts/check_paper_trader_summary.py:502:    print("This summary reliably reports CLOSED-TRADE / REALIZED performance from trade_ledger.csv.")
+/opt/rsidiv/scripts/check_paper_trader_summary.py:504:    print("Unrealized MTM is not computed here unless your open_positions.csv explicitly stores it.")
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:5:One-time OHLCV backfill (daily) for last ~N years (default ~7y).
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:8:- Builds NSE EQ universe from kite.instruments("NSE").
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:33:# Backfill window (calendar days)
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:34:BACKFILL_DAYS = int(os.environ.get("BACKFILL_DAYS", str(7 * 366)))      # ~7 years
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:143:        # overwrite to ensure idempotent backfill
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:200:    start_day = end_day - timedelta(days=BACKFILL_DAYS)
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:204:        f"[BACKFILL] universe={len(eq)} ref={ref_sym} start={start_day} end={end_day} "
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:256:        raise RuntimeError("Backfill collected 0 rows.")
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:262:        "mode": "backfill",
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:265:        "universe_count": len(eq),
+/opt/rsidiv/scripts/backfill_ohlcv_7y.py:271:        "backfill_days": BACKFILL_DAYS,
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh:30:if [[ "${DO_BACKFILL:-0}" == "1" ]]; then
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh:32:  log "Running BACKFILL stage"
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh:34:  python scripts/backfill_ohlcv_7y.py
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh:76:if [[ -s paper_trader_out/state/trade_ledger.csv ]]; then
+/opt/rsidiv/bin/run_daily_lightsail_workflow.sh:84:  log "No paper_trader_out/state/trade_ledger.csv yet; skipping exporter"
+/opt/rsidiv/bin/common.sh:114:  if git diff --cached --quiet; then
+/opt/rsidiv/bin/run_backfill_once.sh:8:export DO_BACKFILL=1
+/etc/systemd/system/rsidiv-daily.service:6:After=network-online.target
+/etc/systemd/system/rsidiv-daily.service:8:Wants=network-online.target
+/etc/systemd/system/rsidiv-daily.service:36:WantedBy=multi-user.target
+/etc/systemd/system/rsidiv-daily.timer:22:WantedBy=timers.target
