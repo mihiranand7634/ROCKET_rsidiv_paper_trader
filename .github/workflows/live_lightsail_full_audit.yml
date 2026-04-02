@@ -1,0 +1,223 @@
+name: live-lightsail-full-audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/live_lightsail_full_audit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  full-audit:
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Collect full live snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TS="$(date -u +'%Y%m%dT%H%M%SZ')"
+          SNAP_ROOT="live_audit_snapshots/${TS}"
+          LATEST_ROOT="live_audit_latest"
+
+          rm -rf "$SNAP_ROOT" "$LATEST_ROOT"
+          mkdir -p "$SNAP_ROOT" "$LATEST_ROOT"
+
+          write_common_reports() {
+            local ROOT="$1"
+            mkdir -p "$ROOT/reports" "$ROOT/raw"
+
+            {
+              echo "timestamp_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+              echo "whoami=$(whoami)"
+              echo "pwd=$(pwd)"
+              echo "hostname=$(hostname)"
+              echo "runner_name=${RUNNER_NAME:-}"
+              echo "runner_os=${RUNNER_OS:-}"
+              echo "runner_arch=${RUNNER_ARCH:-}"
+              echo "labels=self-hosted,Linux,X64"
+              uname -a || true
+            } > "$ROOT/reports/host_identity.txt"
+
+            ls -la /opt/rsidiv > "$ROOT/reports/opt_rsidiv_ls.txt" 2>&1 || true
+            find /opt/rsidiv -maxdepth 2 -type d | sort > "$ROOT/reports/opt_rsidiv_dirs_depth2.txt" 2>&1 || true
+            find /opt/rsidiv/scripts -maxdepth 20 -type f | sort > "$ROOT/reports/scripts_file_list.txt" 2>&1 || true
+            find /opt/rsidiv/bin -maxdepth 20 -type f | sort > "$ROOT/reports/bin_file_list.txt" 2>&1 || true
+            sha256sum $(find /opt/rsidiv/scripts -maxdepth 20 -type f | sort) > "$ROOT/reports/scripts_sha256.txt" 2>&1 || true
+            sha256sum $(find /opt/rsidiv/bin -maxdepth 20 -type f | sort) > "$ROOT/reports/bin_sha256.txt" 2>&1 || true
+
+            mkdir -p "$ROOT/raw/opt_rsidiv/scripts" "$ROOT/raw/opt_rsidiv/bin" "$ROOT/raw/systemd"
+            cp -a /opt/rsidiv/scripts/. "$ROOT/raw/opt_rsidiv/scripts/" 2>/dev/null || true
+            cp -a /opt/rsidiv/bin/. "$ROOT/raw/opt_rsidiv/bin/" 2>/dev/null || true
+            sudo cp /etc/systemd/system/rsidiv-daily.service "$ROOT/raw/systemd/rsidiv-daily.service" 2>/dev/null || cp /etc/systemd/system/rsidiv-daily.service "$ROOT/raw/systemd/rsidiv-daily.service" 2>/dev/null || true
+            sudo cp /etc/systemd/system/rsidiv-daily.timer "$ROOT/raw/systemd/rsidiv-daily.timer" 2>/dev/null || cp /etc/systemd/system/rsidiv-daily.timer "$ROOT/raw/systemd/rsidiv-daily.timer" 2>/dev/null || true
+
+            {
+              echo '===== /opt/rsidiv/bin/run_daily_lightsail_workflow.sh ====='
+              sed -n '1,400p' /opt/rsidiv/bin/run_daily_lightsail_workflow.sh || true
+              echo
+              echo '===== /opt/rsidiv/bin/common.sh ====='
+              sed -n '1,400p' /opt/rsidiv/bin/common.sh || true
+            } > "$ROOT/reports/bin_key_files.txt" 2>&1 || true
+
+            {
+              echo '===== /etc/systemd/system/rsidiv-daily.service ====='
+              sudo cat /etc/systemd/system/rsidiv-daily.service || cat /etc/systemd/system/rsidiv-daily.service || true
+              echo
+              echo '===== /etc/systemd/system/rsidiv-daily.timer ====='
+              sudo cat /etc/systemd/system/rsidiv-daily.timer || cat /etc/systemd/system/rsidiv-daily.timer || true
+            } > "$ROOT/reports/systemd_units.txt" 2>&1 || true
+
+            {
+              echo '===== PAPER TRADER STATE SUMMARY ====='
+              for f in \
+                /opt/rsidiv/paper_trader_out/state/pending_orders.csv \
+                /opt/rsidiv/paper_trader_out/state/open_positions.csv \
+                /opt/rsidiv/paper_trader_out/state/trade_ledger.csv \
+                /opt/rsidiv/paper_trader_out/state/state.json; do
+                echo
+                echo "===== $f ====="
+                ls -l "$f" || true
+                python3 - <<'PY' "$f" || true
+import csv, json, os, sys
+p = sys.argv[1]
+if not os.path.exists(p):
+    print('missing')
+    raise SystemExit
+if p.endswith('.csv'):
+    with open(p, newline='') as fh:
+        rows = list(csv.reader(fh))
+    print('row_count=', max(len(rows)-1, 0))
+    print('head:')
+    for r in rows[:6]:
+        print(r)
+    if len(rows) > 12:
+        print('tail:')
+        for r in rows[-6:]:
+            print(r)
+elif p.endswith('.json'):
+    with open(p) as fh:
+        obj = json.load(fh)
+    print(json.dumps(obj, indent=2)[:40000])
+PY
+              done
+            } > "$ROOT/reports/state_summary.txt" 2>&1 || true
+
+            mkdir -p "$ROOT/raw/state"
+            cp -a /opt/rsidiv/paper_trader_out/state/. "$ROOT/raw/state/" 2>/dev/null || true
+
+            find /opt/rsidiv/paper_trader_out/run -maxdepth 3 -type d | sort > "$ROOT/reports/paper_trader_run_dirs.txt" 2>&1 || true
+            find /opt/rsidiv/paper_trader_out/run -maxdepth 3 -type f | sort | tail -n 500 > "$ROOT/reports/paper_trader_run_files_tail500.txt" 2>&1 || true
+
+            tail -n 600 /opt/rsidiv/logs/rsidiv-daily.log > "$ROOT/reports/rsidiv_daily_log_tail.txt" 2>&1 || true
+            tail -n 600 /opt/rsidiv/logs/rsidiv-daily.err > "$ROOT/reports/rsidiv_daily_err_tail.txt" 2>&1 || true
+
+            if [ -f /opt/rsidiv/.env ]; then
+              python3 - <<'PY' > "$ROOT/reports/env_keys_redacted.txt" || true
+from pathlib import Path
+p = Path('/opt/rsidiv/.env')
+for line in p.read_text().splitlines():
+    s = line.strip()
+    if not s or s.startswith('#') or '=' not in s:
+        continue
+    k = s.split('=',1)[0].strip()
+    print(f'{k}=<redacted>')
+PY
+            fi
+
+            python3 - <<'PY' "$ROOT/raw/opt_rsidiv/scripts" "$ROOT/raw/opt_rsidiv/bin" "$ROOT/reports/python_logic_index.txt" || true
+import ast, os, sys
+roots = sys.argv[1:-1]
+out = sys.argv[-1]
+lines = []
+for root in roots:
+    if not os.path.isdir(root):
+        continue
+    for dp, _, fns in os.walk(root):
+        for fn in sorted(fns):
+            if not fn.endswith('.py'):
+                continue
+            p = os.path.join(dp, fn)
+            rel = os.path.relpath(p, root)
+            lines.append(f'===== FILE: {p} =====')
+            try:
+                src = open(p, 'r', encoding='utf-8').read()
+                tree = ast.parse(src)
+                imports, assigns, defs, classes = [], [], [], []
+                for n in tree.body:
+                    if isinstance(n, ast.Import):
+                        imports.extend([a.name for a in n.names])
+                    elif isinstance(n, ast.ImportFrom):
+                        imports.append(f"{n.module}:{','.join(a.name for a in n.names)}")
+                    elif isinstance(n, ast.Assign):
+                        for t in n.targets:
+                            if isinstance(t, ast.Name) and t.id.isupper():
+                                assigns.append(t.id)
+                    elif isinstance(n, ast.FunctionDef):
+                        args = [a.arg for a in n.args.args]
+                        defs.append(f"{n.name}({', '.join(args)})")
+                    elif isinstance(n, ast.ClassDef):
+                        classes.append(n.name)
+                lines.append('imports=' + ', '.join(imports[:200]))
+                lines.append('constants=' + ', '.join(assigns[:200]))
+                lines.append('classes=' + ', '.join(classes[:200]))
+                lines.append('functions=' + ', '.join(defs[:400]))
+            except Exception as e:
+                lines.append(f'parse_error={e}')
+            lines.append('')
+with open(out, 'w', encoding='utf-8') as fh:
+    fh.write('\n'.join(lines))
+PY
+
+            python3 - <<'PY' "$ROOT/raw/opt_rsidiv/scripts" "$ROOT/reports/text_grep_index.txt" || true
+import os, re, sys
+root, out = sys.argv[1], sys.argv[2]
+patterns = [
+    r'pending_orders', r'open_positions', r'trade_ledger', r'MAX_HOLD', r'time_exit',
+    r'stop', r'target', r'ATR', r'next_business', r'entry_date', r'fill', r'cache',
+    r'universe', r'dedupe', r'both-hit', r'stop_first', r'state.json'
+]
+compiled = [re.compile(p, re.I) for p in patterns]
+rows = []
+for dp, _, fns in os.walk(root):
+    for fn in sorted(fns):
+        if not fn.endswith(('.py', '.sh', '.txt', '.json', '.service', '.timer')):
+            continue
+        p = os.path.join(dp, fn)
+        try:
+            text = open(p, 'r', encoding='utf-8', errors='ignore').read().splitlines()
+        except Exception:
+            continue
+        for i, line in enumerate(text, 1):
+            if any(c.search(line) for c in compiled):
+                rows.append(f'{p}:{i}: {line}')
+with open(out, 'w', encoding='utf-8') as fh:
+    fh.write('\n'.join(rows[:20000]))
+PY
+          }
+
+          write_common_reports "$SNAP_ROOT"
+          write_common_reports "$LATEST_ROOT"
+
+      - name: Commit full audit snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A live_audit_snapshots live_audit_latest
+          if git diff --cached --quiet; then
+            echo "Nothing staged"
+            exit 0
+          fi
+          git commit -m "Add full live Lightsail audit snapshot"
+          git push origin HEAD:main
