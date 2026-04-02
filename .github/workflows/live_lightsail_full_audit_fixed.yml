@@ -1,0 +1,145 @@
+name: live-lightsail-full-audit-fixed
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/live_lightsail_full_audit_fixed.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  full-audit:
+    runs-on: [self-hosted, Linux, X64]
+    timeout-minutes: 45
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Collect full live snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TS="$(date -u +'%Y%m%dT%H%M%SZ')"
+          SNAP_ROOT="live_audit_snapshots/${TS}"
+          LATEST_ROOT="live_audit_latest"
+
+          rm -rf "$LATEST_ROOT"
+          mkdir -p "$SNAP_ROOT/reports" "$SNAP_ROOT/raw" "$LATEST_ROOT/reports" "$LATEST_ROOT/raw"
+
+          write_reports() {
+            local ROOT="$1"
+
+            mkdir -p "$ROOT/reports" "$ROOT/raw/opt_rsidiv/scripts" "$ROOT/raw/opt_rsidiv/bin" "$ROOT/raw/systemd" "$ROOT/raw/state"
+
+            {
+              echo "timestamp_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+              echo "whoami=$(whoami)"
+              echo "pwd=$(pwd)"
+              echo "hostname=$(hostname)"
+              echo "runner_name=${RUNNER_NAME:-}"
+              echo "runner_os=${RUNNER_OS:-}"
+              echo "runner_arch=${RUNNER_ARCH:-}"
+              echo "labels=self-hosted,Linux,X64"
+              uname -a || true
+            } > "$ROOT/reports/host_identity.txt"
+
+            ls -la /opt/rsidiv > "$ROOT/reports/opt_rsidiv_ls.txt" 2>&1 || true
+            find /opt/rsidiv -maxdepth 2 -type d | sort > "$ROOT/reports/opt_rsidiv_dirs_depth2.txt" 2>&1 || true
+            find /opt/rsidiv/scripts -maxdepth 20 -type f | sort > "$ROOT/reports/scripts_file_list.txt" 2>&1 || true
+            find /opt/rsidiv/bin -maxdepth 20 -type f | sort > "$ROOT/reports/bin_file_list.txt" 2>&1 || true
+
+            find /opt/rsidiv/scripts -maxdepth 20 -type f -print0 2>/dev/null | sort -z | xargs -0 -r sha256sum > "$ROOT/reports/scripts_sha256.txt" 2>&1 || true
+            find /opt/rsidiv/bin -maxdepth 20 -type f -print0 2>/dev/null | sort -z | xargs -0 -r sha256sum > "$ROOT/reports/bin_sha256.txt" 2>&1 || true
+
+            cp -a /opt/rsidiv/scripts/. "$ROOT/raw/opt_rsidiv/scripts/" 2>/dev/null || true
+            cp -a /opt/rsidiv/bin/. "$ROOT/raw/opt_rsidiv/bin/" 2>/dev/null || true
+            sudo cp /etc/systemd/system/rsidiv-daily.service "$ROOT/raw/systemd/rsidiv-daily.service" 2>/dev/null || cp /etc/systemd/system/rsidiv-daily.service "$ROOT/raw/systemd/rsidiv-daily.service" 2>/dev/null || true
+            sudo cp /etc/systemd/system/rsidiv-daily.timer "$ROOT/raw/systemd/rsidiv-daily.timer" 2>/dev/null || cp /etc/systemd/system/rsidiv-daily.timer "$ROOT/raw/systemd/rsidiv-daily.timer" 2>/dev/null || true
+            cp -a /opt/rsidiv/paper_trader_out/state/. "$ROOT/raw/state/" 2>/dev/null || true
+
+            {
+              echo '===== /opt/rsidiv/bin/run_daily_lightsail_workflow.sh ====='
+              sed -n '1,400p' /opt/rsidiv/bin/run_daily_lightsail_workflow.sh || true
+              echo
+              echo '===== /opt/rsidiv/bin/common.sh ====='
+              sed -n '1,400p' /opt/rsidiv/bin/common.sh || true
+            } > "$ROOT/reports/bin_key_files.txt" 2>&1 || true
+
+            {
+              echo '===== /etc/systemd/system/rsidiv-daily.service ====='
+              sudo cat /etc/systemd/system/rsidiv-daily.service || cat /etc/systemd/system/rsidiv-daily.service || true
+              echo
+              echo '===== /etc/systemd/system/rsidiv-daily.timer ====='
+              sudo cat /etc/systemd/system/rsidiv-daily.timer || cat /etc/systemd/system/rsidiv-daily.timer || true
+            } > "$ROOT/reports/systemd_units.txt" 2>&1 || true
+
+            {
+              echo '===== PAPER TRADER STATE SUMMARY ====='
+              for f in \
+                /opt/rsidiv/paper_trader_out/state/pending_orders.csv \
+                /opt/rsidiv/paper_trader_out/state/open_positions.csv \
+                /opt/rsidiv/paper_trader_out/state/trade_ledger.csv \
+                /opt/rsidiv/paper_trader_out/state/state.json; do
+                echo
+                echo "===== $f ====="
+                ls -l "$f" || true
+                if [ -f "$f" ]; then
+                  if [[ "$f" == *.csv ]]; then
+                    echo "line_count=$(wc -l < \"$f\")"
+                    echo '----- HEAD -----'
+                    head -n 10 "$f" || true
+                    echo '----- TAIL -----'
+                    tail -n 10 "$f" || true
+                  elif [[ "$f" == *.json ]]; then
+                    echo '----- JSON HEAD 40000 CHARS -----'
+                    head -c 40000 "$f" || true
+                    echo
+                  fi
+                fi
+              done
+            } > "$ROOT/reports/state_summary.txt" 2>&1 || true
+
+            find /opt/rsidiv/paper_trader_out/run -maxdepth 3 -type d | sort > "$ROOT/reports/paper_trader_run_dirs.txt" 2>&1 || true
+            find /opt/rsidiv/paper_trader_out/run -maxdepth 3 -type f | sort | tail -n 500 > "$ROOT/reports/paper_trader_run_files_tail500.txt" 2>&1 || true
+
+            tail -n 600 /opt/rsidiv/logs/rsidiv-daily.log > "$ROOT/reports/rsidiv_daily_log_tail.txt" 2>&1 || true
+            tail -n 600 /opt/rsidiv/logs/rsidiv-daily.err > "$ROOT/reports/rsidiv_daily_err_tail.txt" 2>&1 || true
+
+            if [ -f /opt/rsidiv/.env ]; then
+              grep -vE '^[[:space:]]*#|^[[:space:]]*$' /opt/rsidiv/.env | sed 's/=.*$/=<redacted>/' > "$ROOT/reports/env_keys_redacted.txt" 2>&1 || true
+            fi
+
+            {
+              echo '===== PYTHON/SH LOGIC INDEX ====='
+              while IFS= read -r f; do
+                echo
+                echo "===== FILE: $f ====="
+                grep -nE '^(async[[:space:]]+def|def|class|from[[:space:]]+|import[[:space:]]+)' "$f" || true
+              done < <(find /opt/rsidiv/scripts /opt/rsidiv/bin -type f \( -name '*.py' -o -name '*.sh' \) 2>/dev/null | sort)
+            } > "$ROOT/reports/python_logic_index.txt" 2>&1 || true
+
+            grep -RniE 'pending_orders|open_positions|trade_ledger|MAX_HOLD|time_exit|stop|target|ATR|next_business|entry_date|fill|cache|universe|dedupe|both-hit|stop_first|state\.json' /opt/rsidiv/scripts /opt/rsidiv/bin /etc/systemd/system/rsidiv-daily.service /etc/systemd/system/rsidiv-daily.timer > "$ROOT/reports/text_grep_index.txt" 2>&1 || true
+          }
+
+          write_reports "$SNAP_ROOT"
+          write_reports "$LATEST_ROOT"
+
+      - name: Commit full audit snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A live_audit_snapshots live_audit_latest
+          if git diff --cached --quiet; then
+            echo "Nothing staged"
+            exit 0
+          fi
+          git commit -m "Add fixed full live Lightsail audit snapshot"
+          git push origin HEAD:main
