@@ -1,0 +1,114 @@
+name: live-lightsail-audit-retry
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/live_lightsail_audit_retry.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit-live:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect live audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUTDIR="live_audit"
+          rm -rf "$OUTDIR"
+          mkdir -p "$OUTDIR"
+          {
+            echo "timestamp_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "whoami=$(whoami)"
+            echo "pwd=$(pwd)"
+            echo "hostname=$(hostname)"
+            echo "runner_name=${RUNNER_NAME:-}"
+            echo "runner_os=${RUNNER_OS:-}"
+            echo "runner_arch=${RUNNER_ARCH:-}"
+            echo "labels=self-hosted,linux,x64"
+          } > "$OUTDIR/host_identity.txt"
+          ls -la /opt/rsidiv > "$OUTDIR/opt_rsidiv_ls.txt" 2>&1 || true
+          find /opt/rsidiv/scripts -maxdepth 10 -type f | sort > "$OUTDIR/scripts_file_list.txt" 2>&1 || true
+          sha256sum /opt/rsidiv/scripts/* > "$OUTDIR/scripts_sha256.txt" 2>&1 || true
+          {
+            echo "===== /opt/rsidiv/bin/run_daily_lightsail_workflow.sh ====="
+            sed -n '1,400p' /opt/rsidiv/bin/run_daily_lightsail_workflow.sh
+          } > "$OUTDIR/bin_run_daily_lightsail_workflow.sh.txt" 2>&1 || true
+          {
+            echo "===== /opt/rsidiv/bin/common.sh ====="
+            sed -n '1,400p' /opt/rsidiv/bin/common.sh
+          } > "$OUTDIR/bin_common.sh.txt" 2>&1 || true
+          {
+            echo "===== /etc/systemd/system/rsidiv-daily.service ====="
+            sudo cat /etc/systemd/system/rsidiv-daily.service || cat /etc/systemd/system/rsidiv-daily.service
+          } > "$OUTDIR/systemd_service.txt" 2>&1 || true
+          {
+            echo "===== /etc/systemd/system/rsidiv-daily.timer ====="
+            sudo cat /etc/systemd/system/rsidiv-daily.timer || cat /etc/systemd/system/rsidiv-daily.timer
+          } > "$OUTDIR/systemd_timer.txt" 2>&1 || true
+          {
+            echo "===== SCRIPT CONTENTS BEGIN ====="
+            while IFS= read -r f; do
+              echo
+              echo "===== FILE: $f ====="
+              sed -n '1,400p' "$f" || cat "$f"
+            done < "$OUTDIR/scripts_file_list.txt"
+            echo
+            echo "===== SCRIPT CONTENTS END ====="
+          } > "$OUTDIR/scripts_contents.txt" 2>&1 || true
+          {
+            echo "===== STATE SUMMARY ====="
+            for f in \
+              /opt/rsidiv/paper_trader_out/state/pending_orders.csv \
+              /opt/rsidiv/paper_trader_out/state/open_positions.csv \
+              /opt/rsidiv/paper_trader_out/state/trade_ledger.csv \
+              /opt/rsidiv/paper_trader_out/state/state.json; do
+              echo
+              echo "===== $f ====="
+              ls -l "$f" || true
+              python3 - <<'PY' "$f" || true
+import json, os, sys
+p = sys.argv[1]
+if not os.path.exists(p):
+    print('missing')
+    raise SystemExit
+if p.endswith('.csv'):
+    import csv
+    with open(p, newline='') as fh:
+        rows = list(csv.reader(fh))
+    print('rows=', max(len(rows)-1, 0))
+    for r in rows[:6]:
+        print(r)
+    if len(rows) > 6:
+        print('...')
+        for r in rows[-6:]:
+            print(r)
+elif p.endswith('.json'):
+    with open(p) as fh:
+        obj = json.load(fh)
+    print(json.dumps(obj, indent=2)[:20000])
+PY
+            done
+          } > "$OUTDIR/state_summary.txt" 2>&1 || true
+          tail -n 400 /opt/rsidiv/logs/rsidiv-daily.log > "$OUTDIR/rsidiv_daily_log_tail.txt" 2>&1 || true
+          tail -n 400 /opt/rsidiv/logs/rsidiv-daily.err > "$OUTDIR/rsidiv_daily_err_tail.txt" 2>&1 || true
+      - name: Commit audit outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- live_audit; then
+            echo "No changes in live_audit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live_audit
+          git commit -m "Update live Lightsail audit outputs"
+          git push
